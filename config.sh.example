@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# URLs de los componentes. Copiar a config.sh y ajustar si cambian los deploys.
+
+URL_DONACIONES="${URL_DONACIONES:-https://donaciones-xouj.onrender.com}"
+URL_DONADORES="${URL_DONADORES:-https://entrega-2-lolasimone.onrender.com}"
+URL_INCENTIVOS="${URL_INCENTIVOS:-https://entrega-2-melinazingales.onrender.com}"
+URL_LOGISTICA="${URL_LOGISTICA:-https://donatrack-api-logistica-diseno-en-beta.onrender.com}"
+
+# Timeout por request en segundos. Render free tier puede tardar 90s+ en despertar.
+TIMEOUT="${TIMEOUT:-200}"
+
+# Prefijo con el que se nombra todo lo que crean los scripts, para poder limpiarlo.
+PREFIJO="${PREFIJO:-TEST}"
