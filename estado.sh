@@ -59,7 +59,8 @@ echo "  $(date '+%Y-%m-%d %H:%M:%S')" >&2
 titulo "DISPONIBILIDAD"
 detalle "si algun servicio esta dormido, despertarlo puede tardar mas de 90s"
 for par in "Donaciones|$URL_DONACIONES" "Donadores|$URL_DONADORES" \
-           "Incentivos|$URL_INCENTIVOS" "Logistica|$URL_LOGISTICA"; do
+           "Incentivos|$URL_INCENTIVOS" "Logistica|$URL_LOGISTICA" \
+           "Worker-1|$URL_LOGISTICA_WORKER_1" "Worker-2|$URL_LOGISTICA_WORKER_2"; do
   nombre="${par%%|*}"; url="${par##*|}"
   inicio=$(date +%s)
   # curl con -w siempre imprime un codigo (000 si fallo), asi que no hace falta un || echo:

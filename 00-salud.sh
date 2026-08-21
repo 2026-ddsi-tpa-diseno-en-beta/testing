@@ -47,6 +47,9 @@ chequear "Donadores y Entidades" "$URL_DONADORES"
 chequear "Incentivos" "$URL_INCENTIVOS"
 chequear "Logistica" "$URL_LOGISTICA"
 
+chequear "Worker-1" "$URL_LOGISTICA_WORKER_1"
+chequear "Worker-2" "$URL_LOGISTICA_WORKER_2"
+
 paso "Modo de integracion de Donaciones"
 req GET "$URL_DONACIONES/admin/estado"
 if [ "$HTTP_CODE" = "200" ]; then
