@@ -199,9 +199,14 @@ cargar_config() {
   if [ -f "$DIR_BASE/config.sh" ]; then
     # shellcheck disable=SC1090
     . "$DIR_BASE/config.sh"
+  elif [ -f "$DIR_BASE/config.sh.example" ]; then
+    # Clon fresco (ej. la compu del laboratorio el dia de la entrega): usar los
+    # defaults del ejemplo asi todo funciona de una. Para pisar una URL, copiar
+    # el ejemplo a config.sh o exportar la variable antes de correr el script.
+    # shellcheck disable=SC1090
+    . "$DIR_BASE/config.sh.example"
   else
-    echo "${C_ERR}No existe config.sh${C_OFF}"
-    echo "Copialo del ejemplo:  cp config.sh.example config.sh"
+    echo "${C_ERR}No existe config.sh ni config.sh.example${C_OFF}"
     exit 1
   fi
 }
