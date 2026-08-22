@@ -16,7 +16,10 @@ exigir_estado DEPOSITO
 titulo "FLUJO 2 - REPORTAR UNA ENTREGA"
 
 # ------------------------------------------------------------ buscar paquete
+PAQUETE_GUARDADO="${PAQUETE:-}"
+ASIGNACION_GUARDADA="${ASIGNACION:-}"
 PAQUETE="${1:-}"
+ASIGNACION=""
 
 if [ -z "$PAQUETE" ]; then
   paso "Buscando el paquete de la ultima donacion registrada"
@@ -25,9 +28,12 @@ if [ -z "$PAQUETE" ]; then
     detalle "corre primero ./10-flujo-registrar-donacion.sh, o pasa el paqueteID como argumento"
     resumen; exit 1
   fi
+  if [ -n "$PAQUETE_GUARDADO" ]; then
+    detalle "paquete guardado en .estado: $PAQUETE_GUARDADO; se vuelve a buscar por donacion"
+  fi
   detalle "donacion: $DONACION"
   req GET "$URL_LOGISTICA/depositos/$DEPOSITO"
-  PAQUETE=$(printf '%s' "$HTTP_BODY" | python3 -c "
+  PAQUETE=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()
@@ -40,13 +46,44 @@ for p in d.get('stockActual') or []:
     resumen; exit 1
   fi
   ok "paquete encontrado: $PAQUETE"
+  guardar PAQUETE "$PAQUETE"
 fi
 
 echo "paquete: $PAQUETE"
 
 # ------------------------------------------------------------ estado previo
 paso "Estado antes de reportar"
-req GET "$URL_LOGISTICA/asignaciones/$PAQUETE"
+if [ -n "$ASIGNACION_GUARDADA" ]; then
+  detalle "asignacion guardada en .estado: $ASIGNACION_GUARDADA; se vuelve a buscar por paquete"
+fi
+detalle "buscando la asignacion asociada al paquete $PAQUETE"
+ASIGNACION=$(python_json - "$URL_LOGISTICA" "$PAQUETE" <<'PY'
+import json, subprocess, sys
+base, paquete = sys.argv[1], sys.argv[2]
+for i in range(1, 500):
+    try:
+        raw = subprocess.check_output(
+            ["curl", "-sS", "-m", "20", f"{base}/asignaciones/{i}"],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        data = json.loads(raw)
+    except Exception:
+        continue
+    if str(data.get("paqueteID")) == str(paquete):
+        print(data.get("id"))
+        break
+PY
+)
+if [ -n "$ASIGNACION" ] && [ "$ASIGNACION" != "null" ]; then
+  guardar ASIGNACION "$ASIGNACION"
+else
+  falla "el paquete $PAQUETE no tiene asignacion"
+  detalle "si acabas de correr el flujo 10, espera unos segundos o volvelo a correr para que el Worker procese la cola"
+  resumen; exit 1
+fi
+
+req GET "$URL_LOGISTICA/asignaciones/$ASIGNACION"
 if [ "$HTTP_CODE" = "200" ]; then
   ASIGNACION=$(campo '.id')
   NECESIDAD=$(campo '.necesidadID')
@@ -94,7 +131,7 @@ ok "entrega reportada"
 
 # ------------------------------------------------------------ los 3 efectos
 paso "1. La asignacion tiene que quedar COMPLETADA"
-req GET "$URL_LOGISTICA/asignaciones/$PAQUETE"
+req GET "$URL_LOGISTICA/asignaciones/$ASIGNACION"
 if [ "$HTTP_CODE" = "200" ]; then
   verificar "estado de la asignacion" "COMPLETADA" "$(campo '.estado')"
 else
@@ -123,7 +160,7 @@ if [ -n "${DONACION:-}" ]; then
 
   paso "Trazabilidad: el historial tiene que mostrar los dos cambios"
   req GET "$URL_DONACIONES/donaciones/$DONACION/historial"
-  CANT=$(printf '%s' "$HTTP_BODY" | python3 -c "
+  CANT=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: print(len(json.load(sys.stdin)))
 except Exception: print(0)

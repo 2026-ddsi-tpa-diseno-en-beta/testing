@@ -60,8 +60,17 @@ guardar DONACION "$DONACION"
 # ------------------------------------------------------------------ paso 2
 paso "2. Logistica guardo el paquete en el deposito"
 req GET "$URL_LOGISTICA/depositos/$DEPOSITO"
-if printf '%s' "$HTTP_BODY" | grep -q "$DONACION"; then
-  ok "el paquete de esta donacion esta en el deposito"
+PAQUETE=$(printf '%s' "$HTTP_BODY" | python_json -c "
+import json,sys
+try: d=json.load(sys.stdin)
+except Exception: sys.exit()
+for p in d.get('stockActual') or []:
+    if p.get('donacionID') == '''${DONACION}''':
+        print(p.get('id')); break
+" 2>/dev/null)
+if [ -n "$PAQUETE" ] && [ "$PAQUETE" != "null" ]; then
+  ok "el paquete de esta donacion esta en el deposito: $PAQUETE"
+  guardar PAQUETE "$PAQUETE"
 else
   falla "el paquete no aparece en el deposito"
   detalle "Donaciones dijo que registro, pero Logistica no lo tiene"
@@ -79,6 +88,32 @@ detalle "asignaciones despues: $ASIG_DESPUES (antes: $ASIG_ANTES)"
 
 if [ "$ASIG_DESPUES" -gt "$ASIG_ANTES" ]; then
   ok "se creo la asignacion: la cola y el worker funcionan"
+  if [ -n "${PAQUETE:-}" ]; then
+    ASIGNACION=$(python_json - "$URL_LOGISTICA" "$PAQUETE" "$ASIG_DESPUES" <<'PY'
+import json, subprocess, sys
+base, paquete, limite = sys.argv[1], sys.argv[2], int(sys.argv[3])
+for i in range(1, limite + 25):
+    try:
+        raw = subprocess.check_output(
+            ["curl", "-sS", "-m", "20", f"{base}/asignaciones/{i}"],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        data = json.loads(raw)
+    except Exception:
+        continue
+    if str(data.get("paqueteID")) == str(paquete):
+        print(data.get("id"))
+        break
+PY
+)
+    if [ -n "$ASIGNACION" ] && [ "$ASIGNACION" != "null" ]; then
+      ok "asignacion asociada al paquete: $ASIGNACION"
+      guardar ASIGNACION "$ASIGNACION"
+    else
+      aviso "no pude identificar el id de asignacion; el flujo 11 puede necesitar argumento"
+    fi
+  fi
 else
   falla "NO se creo ninguna asignacion"
 

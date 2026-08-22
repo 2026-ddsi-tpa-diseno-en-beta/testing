@@ -8,9 +8,10 @@ set -u
 . "$(dirname "$0")/lib/comun.sh"
 
 SELLO="$(date +%m%d-%H%M%S)"
+SELLO_DOC="$(date +%m%d%H%M%S)"
 
 titulo "SEED DE PRECONDICIONES"
-echo "Todo lo que se cree lleva el prefijo '$PREFIJO' para poder limpiarlo despues."
+echo "Todo lo que se cree usa nombres reconocibles y el sello '$SELLO' para distinguir corridas."
 echo "Sello de esta corrida: $SELLO"
 
 # ============================================================ DONACIONES
@@ -18,7 +19,7 @@ titulo "1/4  DONACIONES: categoria, subcategoria, identificador y producto"
 
 paso "Categoria raiz"
 req POST "$URL_DONACIONES/categorias" \
-  "{\"nombre\":\"$PREFIJO-Alimentos-$SELLO\",\"descripcion\":\"categoria de prueba\"}"
+  "{\"nombre\":\"Alimentos no perecederos $SELLO\",\"descripcion\":\"Productos alimenticios para comedores comunitarios\"}"
 CATEGORIA=$(campo '.id')
 if [ -n "$CATEGORIA" ] && [ "$CATEGORIA" != "null" ]; then
   ok "categoria creada: $CATEGORIA"; guardar CATEGORIA "$CATEGORIA"
@@ -28,7 +29,7 @@ fi
 
 paso "Subcategoria (unidad minima de asignacion)"
 req POST "$URL_DONACIONES/categorias" \
-  "{\"nombre\":\"$PREFIJO-Fideos-$SELLO\",\"descripcion\":\"subcategoria de prueba\",\"categoriaPadreID\":\"$CATEGORIA\"}"
+  "{\"nombre\":\"Pastas secas $SELLO\",\"descripcion\":\"Fideos y pastas de paquete\",\"categoriaPadreID\":\"$CATEGORIA\"}"
 SUBCATEGORIA=$(campo '.id')
 if [ -n "$SUBCATEGORIA" ] && [ "$SUBCATEGORIA" != "null" ]; then
   ok "subcategoria creada: $SUBCATEGORIA"; guardar SUBCATEGORIA "$SUBCATEGORIA"
@@ -39,7 +40,7 @@ fi
 
 paso "Identificador de codigo de barras"
 req POST "$URL_DONACIONES/identificadores" \
-  "{\"tipo\":\"CODIGODEBARRAS\",\"descripcion\":\"identificador de prueba\"}"
+  "{\"tipo\":\"CODIGODEBARRAS\",\"descripcion\":\"Codigo de barras para alimentos empaquetados\"}"
 IDENTIFICADOR=$(campo '.id')
 [ -n "$IDENTIFICADOR" ] && [ "$IDENTIFICADOR" != "null" ] \
   && { ok "identificador creado: $IDENTIFICADOR"; guardar IDENTIFICADOR "$IDENTIFICADOR"; } \
@@ -47,7 +48,7 @@ IDENTIFICADOR=$(campo '.id')
 
 paso "Producto"
 detalle "la descripcion tiene 4 palabras: valida para codigo de barras (pide 3 o mas)"
-CUERPO_PRODUCTO="{\"nombre\":\"$PREFIJO Fideos\",\"descripcion\":\"medio kilo de fideos\",\"categoriaID\":\"$CATEGORIA\""
+CUERPO_PRODUCTO="{\"nombre\":\"Fideos tirabuzon La Familiar\",\"descripcion\":\"paquete seco de fideos\",\"categoriaID\":\"$CATEGORIA\""
 [ -n "$SUBCATEGORIA" ] && CUERPO_PRODUCTO="$CUERPO_PRODUCTO,\"subcategoriaID\":\"$SUBCATEGORIA\""
 [ -n "${IDENTIFICADOR:-}" ] && CUERPO_PRODUCTO="$CUERPO_PRODUCTO,\"identificadorID\":\"$IDENTIFICADOR\""
 CUERPO_PRODUCTO="$CUERPO_PRODUCTO}"
@@ -63,9 +64,9 @@ fi
 titulo "2/4  DONADORES Y ENTIDADES: donadores, entidad y necesidades"
 
 crear_donador() {
-  local etiqueta="$1"
+  local nombre="$1" apellido="$2" email_local="$3" doc_sufijo="$4" domicilio="$5"
   req POST "$URL_DONADORES/donadores" \
-    "{\"nombre\":\"$PREFIJO-$etiqueta\",\"apellido\":\"Prueba\",\"edad\":30,\"email\":\"$PREFIJO-$etiqueta-$SELLO@test.local\",\"nroDocumento\":\"$SELLO\",\"domicilio\":\"Calle de prueba 100\"}"
+    "{\"nombre\":\"$nombre\",\"apellido\":\"$apellido\",\"edad\":30,\"email\":\"$email_local.$SELLO@donatrack.org.ar\",\"nroDocumento\":\"$SELLO_DOC$doc_sufijo\",\"domicilio\":\"$domicilio\"}"
   campo '.id'
 }
 
@@ -73,7 +74,7 @@ sumar_quejas() {
   local donador="$1" cantidad="$2" i=1
   while [ "$i" -le "$cantidad" ]; do
     curl -sS -m "$TIMEOUT" -o /dev/null -X POST -H 'Content-Type: application/json' \
-      -d "{\"donacionID\":\"seed\",\"donadorID\":\"$donador\",\"fecha\":\"$(date +%Y-%m-%d)\",\"descripcion\":\"queja de seed $i\"}" \
+      -d "{\"donacionID\":\"lote-inicial-$SELLO\",\"donadorID\":\"$donador\",\"fecha\":\"$(date +%Y-%m-%d)\",\"descripcion\":\"Entrega observada por comedor Los Pinos #$i\"}" \
       "$URL_DONADORES/donadores/$donador/quejas"
     i=$((i + 1))
   done
@@ -82,7 +83,7 @@ sumar_quejas() {
 }
 
 paso "Donador limpio (para los flujos que necesitan donar)"
-DONADOR_OK=$(crear_donador "donador-ok")
+DONADOR_OK=$(crear_donador "Carla" "Medina" "carla.medina" "01" "Humberto Primo 1850")
 if [ -n "$DONADOR_OK" ] && [ "$DONADOR_OK" != "null" ]; then
   ok "donador creado: $DONADOR_OK"
   guardar DONADOR_OK "$DONADOR_OK"
@@ -93,7 +94,7 @@ else
 fi
 
 paso "Donador con 5 quejas (deberia quedar SOSPECHOSO)"
-DONADOR_SOSPECHOSO=$(crear_donador "donador-sospechoso")
+DONADOR_SOSPECHOSO=$(crear_donador "Bruno" "Sosa" "bruno.sosa.5quejas" "02" "Estados Unidos 921")
 if [ -n "$DONADOR_SOSPECHOSO" ] && [ "$DONADOR_SOSPECHOSO" != "null" ]; then
   guardar DONADOR_SOSPECHOSO "$DONADOR_SOSPECHOSO"
   detalle "cargando 5 quejas..."
@@ -103,7 +104,7 @@ else
 fi
 
 paso "Donador con 9 quejas (para demostrar el baneo sumando una mas en vivo)"
-DONADOR_CASI_BANEADO=$(crear_donador "donador-9-quejas")
+DONADOR_CASI_BANEADO=$(crear_donador "Elena" "Rivas" "elena.rivas.9quejas" "03" "Carlos Calvo 1440")
 if [ -n "$DONADOR_CASI_BANEADO" ] && [ "$DONADOR_CASI_BANEADO" != "null" ]; then
   guardar DONADOR_CASI_BANEADO "$DONADOR_CASI_BANEADO"
   detalle "cargando 9 quejas..."
@@ -116,7 +117,7 @@ fi
 
 paso "Entidad benefica"
 req POST "$URL_DONADORES/entidades" \
-  "{\"razonSocial\":\"$PREFIJO-Comedor-$SELLO\",\"domicilio\":\"Av. de prueba 742\",\"telefono\":\"1140000000\",\"correo\":\"$PREFIJO-$SELLO@comedor.test\"}"
+  "{\"razonSocial\":\"Comedor Comunitario Los Pinos $SELLO\",\"domicilio\":\"Av. San Martin 2450\",\"telefono\":\"1140000000\",\"correo\":\"contacto.lospinos.$SELLO@donatrack.org.ar\"}"
 ENTIDAD=$(campo '.id')
 if [ -n "$ENTIDAD" ] && [ "$ENTIDAD" != "null" ]; then
   ok "entidad creada: $ENTIDAD"; guardar ENTIDAD "$ENTIDAD"
@@ -127,7 +128,7 @@ fi
 paso "Necesidad EXTRAORDINARIA de 100 unidades"
 detalle "admite satisfaccion parcial: sirve para el flujo de registrar donacion"
 req POST "$URL_DONADORES/necesidades" \
-  "{\"entidadID\":\"$ENTIDAD\",\"productoSolicitadoID\":\"$PRODUCTO\",\"descripcion\":\"$PREFIJO necesidad extraordinaria\",\"cantidadObjetivo\":100,\"nivelDeUrgencia\":9,\"tipo\":\"EXTRAORDINARIA\"}"
+  "{\"entidadID\":\"$ENTIDAD\",\"productoSolicitadoID\":\"$PRODUCTO\",\"descripcion\":\"Reposicion urgente de pastas para almuerzo escolar\",\"cantidadObjetivo\":100,\"nivelDeUrgencia\":9,\"tipo\":\"EXTRAORDINARIA\"}"
 NECESIDAD_EXTRA=$(campo '.id')
 [ -n "$NECESIDAD_EXTRA" ] && [ "$NECESIDAD_EXTRA" != "null" ] \
   && { ok "necesidad extraordinaria: $NECESIDAD_EXTRA"; guardar NECESIDAD_EXTRA "$NECESIDAD_EXTRA"; } \
@@ -136,7 +137,7 @@ NECESIDAD_EXTRA=$(campo '.id')
 paso "Necesidad RECURRENTE de 50 unidades"
 detalle "no admite parcial: sirve para mostrar la bifurcacion del matchmaking"
 req POST "$URL_DONADORES/necesidades" \
-  "{\"entidadID\":\"$ENTIDAD\",\"productoSolicitadoID\":\"$PRODUCTO\",\"descripcion\":\"$PREFIJO necesidad recurrente\",\"cantidadObjetivo\":50,\"nivelDeUrgencia\":5,\"tipo\":\"RECURRENTE\"}"
+  "{\"entidadID\":\"$ENTIDAD\",\"productoSolicitadoID\":\"$PRODUCTO\",\"descripcion\":\"Entrega mensual de pastas para merendero\",\"cantidadObjetivo\":50,\"nivelDeUrgencia\":5,\"tipo\":\"RECURRENTE\"}"
 NECESIDAD_RECURRENTE=$(campo '.id')
 [ -n "$NECESIDAD_RECURRENTE" ] && [ "$NECESIDAD_RECURRENTE" != "null" ] \
   && { ok "necesidad recurrente: $NECESIDAD_RECURRENTE"; guardar NECESIDAD_RECURRENTE "$NECESIDAD_RECURRENTE"; } \
@@ -147,7 +148,7 @@ titulo "3/4  LOGISTICA: deposito con algoritmo de matchmaking"
 
 paso "Deposito"
 req POST "$URL_LOGISTICA/depositos" \
-  "{\"nombre\":\"$PREFIJO-Deposito-$SELLO\",\"direccion\":\"Av. de prueba 3000\",\"capacidadMaxima\":1000}"
+  "{\"nombre\":\"Deposito Barracas Central $SELLO\",\"direccion\":\"Iriarte 3200, Barracas\",\"capacidadMaxima\":1000}"
 DEPOSITO=$(campo '.id')
 if [ -n "$DEPOSITO" ] && [ "$DEPOSITO" != "null" ]; then
   ok "deposito creado: $DEPOSITO"; guardar DEPOSITO "$DEPOSITO"
@@ -167,7 +168,7 @@ titulo "4/4  INCENTIVOS: insignia y mision"
 
 paso "Insignia"
 req POST "$URL_INCENTIVOS/insignias" \
-  "{\"nombre\":\"$PREFIJO-Insignia-$SELLO\",\"descripcion\":\"insignia de prueba\"}"
+  "{\"nombre\":\"Aliado de Comedores $SELLO\",\"descripcion\":\"Reconoce donaciones constantes a comedores comunitarios\"}"
 INSIGNIA=$(campo '.id')
 [ -n "$INSIGNIA" ] && [ "$INSIGNIA" != "null" ] \
   && { ok "insignia creada: $INSIGNIA"; guardar INSIGNIA "$INSIGNIA"; } \
@@ -176,7 +177,7 @@ INSIGNIA=$(campo '.id')
 paso "Mision COMPLETITUD (OCASIONAL -> COLABORADOR)"
 detalle "se completa donando en 3 categorias distintas"
 req POST "$URL_INCENTIVOS/misiones" \
-  "{\"nombre\":\"$PREFIJO-Completitud-$SELLO\",\"insigniaID\":\"${INSIGNIA:-}\",\"categoriaInicio\":\"OCASIONAL\",\"categoriaFin\":\"COLABORADOR\",\"tipo\":\"COMPLETITUD\"}"
+  "{\"nombre\":\"Ruta de Abastecimiento Barrial $SELLO\",\"insigniaID\":\"${INSIGNIA:-}\",\"categoriaInicio\":\"OCASIONAL\",\"categoriaFin\":\"COLABORADOR\",\"tipo\":\"COMPLETITUD\"}"
 MISION=$(campo '.id')
 [ -n "$MISION" ] && [ "$MISION" != "null" ] \
   && { ok "mision creada: $MISION"; guardar MISION "$MISION"; } \

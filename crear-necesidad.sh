@@ -43,7 +43,7 @@ if [ -t 0 ] && { [ -z "$ENTIDAD_ARG" ] || [ -z "$PRODUCTO_ARG" ]; }; then
   if [ -z "$ENTIDAD_ARG" ]; then
     req GET "$URL_DONADORES/entidades" >/dev/null 2>&1
     detalle "entidades que existen:"
-    printf '%s' "$HTTP_BODY" | python3 -c "
+    printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()
@@ -53,7 +53,7 @@ for x in d[-6:]: print('    ' + str(x.get('id')) + '  ' + str(x.get('razonSocial
   if [ -z "$PRODUCTO_ARG" ]; then
     req GET "$URL_DONACIONES/productos" >/dev/null 2>&1
     detalle "productos que existen:"
-    printf '%s' "$HTTP_BODY" | python3 -c "
+    printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()

@@ -36,9 +36,11 @@ echo "Esperado:  EXTRAORDINARIA acepta parcial  |  RECURRENTE no"
 # --------------------------------------------------------- generar stock
 generar_stock() {
   local etiqueta="$1" cantidad="$2"
+  local subcat_field=""
+  [ -n "${SUBCATEGORIA:-}" ] && subcat_field=",\"subcategoriaID\":\"$SUBCATEGORIA\""
 
   req POST "$URL_DONACIONES/productos" \
-    "{\"nombre\":\"$PREFIJO Parc $etiqueta $SELLO\",\"descripcion\":\"producto para probar parcialidad\",\"categoriaID\":\"$CATEGORIA\"}"
+    "{\"nombre\":\"$PREFIJO Parc $etiqueta $SELLO\",\"descripcion\":\"producto para probar parcialidad\",\"categoriaID\":\"$CATEGORIA\"$subcat_field}"
   local prod
   prod=$(campo '.id')
   [ -z "$prod" ] || [ "$prod" = "null" ] && { echo ""; return; }
@@ -57,7 +59,7 @@ generar_stock() {
   if [ "${disponible:-0}" = "0" ] && [ "$SIMULAR" = "si" ] && [ -n "$donacion" ]; then
     req GET "$URL_LOGISTICA/depositos/$DEPOSITO"
     local paquete
-    paquete=$(printf '%s' "$HTTP_BODY" | python3 -c "
+    paquete=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()

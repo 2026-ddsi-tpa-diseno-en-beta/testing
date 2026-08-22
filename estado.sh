@@ -27,7 +27,7 @@ fi
 
 # Cuenta los elementos de un array JSON.
 contar() {
-  printf '%s' "$1" | python3 -c "
+  printf '%s' "$1" | python_json -c "
 import json,sys
 try:
     d=json.load(sys.stdin)
@@ -39,7 +39,7 @@ except Exception: print(0)
 # Lista los primeros N elementos mostrando los campos que se le pasen.
 listar() {
   local cuantos="$1"; shift
-  printf '%s' "$HTTP_BODY" | python3 -c "
+  printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 campos=sys.argv[2:]
 try: d=json.load(sys.stdin)
@@ -120,7 +120,7 @@ titulo "DONADORES Y ENTIDADES"
 req GET "$URL_DONADORES/donadores" >/dev/null 2>&1
 if [ "$HTTP_CODE" = "200" ] && [ -n "$HTTP_BODY" ]; then
   # Cuenta cuantos hay en cada estado, para ver de un vistazo si hay baneados o sospechosos.
-  printf '%s' "$HTTP_BODY" | python3 -c "
+  printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 from collections import Counter
 try: d=json.load(sys.stdin)

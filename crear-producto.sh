@@ -49,7 +49,7 @@ if [ -z "$CATEGORIA_ARG" ] && [ -t 0 ]; then
   req GET "$URL_DONACIONES/categorias" >/dev/null 2>&1
   if [ "$HTTP_CODE" = "200" ]; then
     detalle "categorias que existen:"
-    printf '%s' "$HTTP_BODY" | python3 -c "
+    printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()
@@ -75,7 +75,7 @@ fi
 # unidad minima de asignacion, asi que un producto no puede quedar colgado del padre.
 req GET "$URL_DONACIONES/categorias/$CATEGORIA_ARG/subcategorias" >/dev/null 2>&1
 HIJAS="$HTTP_BODY"
-CUANTAS_HIJAS=$(printf '%s' "$HIJAS" | python3 -c "
+CUANTAS_HIJAS=$(printf '%s' "$HIJAS" | python_json -c "
 import json,sys
 try:
     d=json.load(sys.stdin); print(len(d) if isinstance(d,list) else 0)
@@ -85,7 +85,7 @@ except Exception: print(0)
 if [ "${CUANTAS_HIJAS:-0}" -gt 0 ]; then
   detalle "la categoria $CATEGORIA_ARG tiene ${CUANTAS_HIJAS} subcategoria(s): hay que elegir una"
   if [ -z "$SUBCATEGORIA_ARG" ] && [ -t 0 ]; then
-    printf '%s' "$HIJAS" | python3 -c "
+    printf '%s' "$HIJAS" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()

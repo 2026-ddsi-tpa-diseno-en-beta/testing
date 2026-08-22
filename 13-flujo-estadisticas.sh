@@ -21,7 +21,7 @@ echo "donador: $DONADOR"
 # "la integracion no anda" de "no hay nada que traer".
 paso "0. Precondicion: que el donador tenga alguna insignia en Incentivos"
 req GET "$URL_INCENTIVOS/insignias/donador/$DONADOR"
-YA_TIENE=$(printf '%s' "$HTTP_BODY" | python3 -c "
+YA_TIENE=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try:
     d=json.load(sys.stdin)
@@ -47,7 +47,7 @@ paso "1. Lo que dice INCENTIVOS (la fuente de verdad de insignias y misiones)"
 req GET "$URL_INCENTIVOS/insignias/donador/$DONADOR"
 INSIG_INC="$HTTP_BODY"
 COD_INSIG="$HTTP_CODE"
-CANT_INC=$(printf '%s' "$INSIG_INC" | python3 -c "
+CANT_INC=$(printf '%s' "$INSIG_INC" | python_json -c "
 import json,sys
 try:
     d=json.load(sys.stdin)
@@ -72,7 +72,7 @@ detalle "estado:     $(campo '.estado')"
 detalle "categoria:  $(campo '.categoria')"
 detalle "mision:     $(campo '.misionActualID')"
 
-CANT_DYE=$(printf '%s' "$HTTP_BODY" | python3 -c "
+CANT_DYE=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try:
     d=json.load(sys.stdin)

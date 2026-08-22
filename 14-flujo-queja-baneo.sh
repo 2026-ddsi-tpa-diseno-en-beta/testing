@@ -36,7 +36,7 @@ if [ "$MODO" = "queja" ]; then
 
   paso "2. Quejas del donador antes"
   req GET "$URL_DONADORES/donadores/$DONADOR_DE_LA_DONACION/quejas"
-  ANTES=$(printf '%s' "$HTTP_BODY" | python3 -c "
+  ANTES=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: print(len(json.load(sys.stdin)))
 except Exception: print(0)
@@ -55,7 +55,7 @@ except Exception: print(0)
 
   paso "4. La queja tiene que haber llegado a Donadores y Entidades"
   req GET "$URL_DONADORES/donadores/$DONADOR_DE_LA_DONACION/quejas"
-  DESPUES=$(printf '%s' "$HTTP_BODY" | python3 -c "
+  DESPUES=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: print(len(json.load(sys.stdin)))
 except Exception: print(0)
@@ -104,7 +104,7 @@ while [ "$i" -le 10 ]; do
     -d "{\"donacionID\":\"umbral\",\"donadorID\":\"$D\",\"fecha\":\"$(date +%Y-%m-%d)\",\"descripcion\":\"queja $i\"}" \
     "$URL_DONADORES/donadores/$D/quejas"
 
-  EST=$(curl -sS -m "$TIMEOUT" "$URL_DONADORES/donadores/$D" | python3 -c "
+  EST=$(curl -sS -m "$TIMEOUT" "$URL_DONADORES/donadores/$D" | python_json -c "
 import json,sys
 try: print(json.load(sys.stdin).get('estado'))
 except Exception: print('?')

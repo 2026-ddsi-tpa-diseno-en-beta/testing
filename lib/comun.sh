@@ -45,6 +45,59 @@ aviso() {
 
 detalle() { echo "    ${C_DIM}$1${C_OFF}" >&2; }
 
+# ------------------------------------------------------------------ JSON
+# Usa jq si esta instalado. Si no, busca un Python real: en Windows/Git Bash
+# python3 a veces apunta al alias de Microsoft Store y existe, pero no ejecuta.
+buscar_python_json() {
+  local bin
+  for bin in python3 python; do
+    if command -v "$bin" >/dev/null 2>&1 &&
+       printf '{}' | "$bin" -c 'import json,sys; json.load(sys.stdin)' >/dev/null 2>&1; then
+      PYTHON_JSON_BIN="$bin"
+      PYTHON_JSON_ARG=""
+      return 0
+    fi
+  done
+
+  if command -v py >/dev/null 2>&1 &&
+     printf '{}' | py -3 -c 'import json,sys; json.load(sys.stdin)' >/dev/null 2>&1; then
+    PYTHON_JSON_BIN="py"
+    PYTHON_JSON_ARG="-3"
+    return 0
+  fi
+
+  return 1
+}
+
+python_json() {
+  if [ -z "${PYTHON_JSON_BIN:-}" ] && ! buscar_python_json; then
+    echo "No encontre jq ni Python para leer JSON. Instala jq o verifica que python/python3 funcione en Git Bash." >&2
+    return 127
+  fi
+
+  if [ -n "${PYTHON_JSON_ARG:-}" ]; then
+    "$PYTHON_JSON_BIN" "$PYTHON_JSON_ARG" "$@"
+  else
+    "$PYTHON_JSON_BIN" "$@"
+  fi
+}
+
+exigir_json() {
+  command -v jq >/dev/null 2>&1 && return 0
+  buscar_python_json && return 0
+  echo "${C_ERR}Falta parser JSON.${C_OFF}" >&2
+  echo "Instala jq, o instala Python y confirma que alguno de estos funcione en Git Bash:" >&2
+  echo "  jq --version" >&2
+  echo "  python3 --version" >&2
+  echo "  python --version" >&2
+  echo "  py -3 --version" >&2
+  exit 1
+}
+
+json_escape() {
+  printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
 # Compara lo esperado con lo obtenido y reporta.
 verificar() {
   local descripcion="$1" esperado="$2" obtenido="$3"
@@ -97,20 +150,50 @@ campo() {
   if command -v jq >/dev/null 2>&1; then
     printf '%s' "$HTTP_BODY" | jq -r "$ruta" 2>/dev/null
   else
-    printf '%s' "$HTTP_BODY" | python3 -c "
+    printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try:
     d=json.load(sys.stdin)
 except Exception:
     print(''); sys.exit()
-ruta='''$ruta'''.lstrip('.')
-for parte in [p for p in ruta.replace('[',' ').replace(']',' ').split() if p]:
+ruta='''$ruta'''.strip()
+if ruta.startswith('.'):
+    ruta = ruta[1:]
+partes=[]
+buf=''
+i=0
+while i < len(ruta):
+    ch = ruta[i]
+    if ch == '.':
+        if buf:
+            partes.append(buf); buf=''
+    elif ch == '[':
+        if buf:
+            partes.append(buf); buf=''
+        j = ruta.find(']', i)
+        if j == -1:
+            break
+        partes.append(ruta[i+1:j].strip('\"\\''))
+        i = j
+    else:
+        buf += ch
+    i += 1
+if buf:
+    partes.append(buf)
+for parte in partes:
     try:
         d = d[int(parte)] if parte.isdigit() else d.get(parte)
     except Exception:
         d = None
     if d is None: break
-print('' if d is None else d)
+if d is None:
+    print('null')
+elif isinstance(d, bool):
+    print('true' if d else 'false')
+elif isinstance(d, (dict, list)):
+    print(json.dumps(d, ensure_ascii=False))
+else:
+    print(d)
 " 2>/dev/null
   fi
 }

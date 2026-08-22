@@ -20,20 +20,33 @@
 set -u
 . "$(dirname "$0")/lib/comun.sh"
 ayuda "${1:-}"
+exigir_json
 
 NOMBRE=""; APELLIDO=""; EDAD=""; EMAIL=""; DOCUMENTO=""; DOMICILIO=""
-QUEJAS="0"; GUARDAR_COMO="DONADOR_OK"
+QUEJAS="0"; GUARDAR_COMO="DONADOR_MANUAL"
+
+exigir_valor() {
+  [ $# -ge 2 ] || { echo "Falta valor para $1  (./crear-donador.sh --help)" >&2; exit 1; }
+}
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --nombre)        NOMBRE="$2"; shift 2 ;;
-    --apellido)      APELLIDO="$2"; shift 2 ;;
-    --edad)          EDAD="$2"; shift 2 ;;
-    --email)         EMAIL="$2"; shift 2 ;;
-    --documento)     DOCUMENTO="$2"; shift 2 ;;
-    --domicilio)     DOMICILIO="$2"; shift 2 ;;
-    --quejas)        QUEJAS="$2"; shift 2 ;;
-    --guardar-como)  GUARDAR_COMO="$2"; shift 2 ;;
+    --nombre)        exigir_valor "$@"; NOMBRE="$2"; shift 2 ;;
+    --nombre=*)      NOMBRE="${1#*=}"; shift ;;
+    --apellido)      exigir_valor "$@"; APELLIDO="$2"; shift 2 ;;
+    --apellido=*)    APELLIDO="${1#*=}"; shift ;;
+    --edad)          exigir_valor "$@"; EDAD="$2"; shift 2 ;;
+    --edad=*)        EDAD="${1#*=}"; shift ;;
+    --email)         exigir_valor "$@"; EMAIL="$2"; shift 2 ;;
+    --email=*)       EMAIL="${1#*=}"; shift ;;
+    --documento)     exigir_valor "$@"; DOCUMENTO="$2"; shift 2 ;;
+    --documento=*)   DOCUMENTO="${1#*=}"; shift ;;
+    --domicilio)     exigir_valor "$@"; DOMICILIO="$2"; shift 2 ;;
+    --domicilio=*)   DOMICILIO="${1#*=}"; shift ;;
+    --quejas)        exigir_valor "$@"; QUEJAS="$2"; shift 2 ;;
+    --quejas=*)      QUEJAS="${1#*=}"; shift ;;
+    --guardar-como)  exigir_valor "$@"; GUARDAR_COMO="$2"; shift 2 ;;
+    --guardar-como=*) GUARDAR_COMO="${1#*=}"; shift ;;
     *) echo "Argumento desconocido: $1  (./crear-donador.sh --help)" >&2; exit 1 ;;
   esac
 done
@@ -48,6 +61,13 @@ preguntar EMAIL      "Email"                  "$PREFIJO-$SUFIJO@test.local"
 preguntar DOCUMENTO  "Numero de documento"    "$SUFIJO"
 preguntar DOMICILIO  "Domicilio"              "Calle de prueba 100"
 
+case "$EDAD" in
+  ''|*[!0-9]*) echo "Edad invalida: '$EDAD'. Tiene que ser numerica." >&2; exit 1 ;;
+esac
+case "$QUEJAS" in
+  ''|*[!0-9]*) echo "Cantidad de quejas invalida: '$QUEJAS'. Tiene que ser numerica." >&2; exit 1 ;;
+esac
+
 echo "" >&2
 detalle "nombre:    $NOMBRE $APELLIDO"
 detalle "edad:      $EDAD"
@@ -56,8 +76,13 @@ detalle "documento: $DOCUMENTO"
 detalle "domicilio: $DOMICILIO"
 
 paso "POST /donadores"
+NOMBRE_JSON=$(json_escape "$NOMBRE")
+APELLIDO_JSON=$(json_escape "$APELLIDO")
+EMAIL_JSON=$(json_escape "$EMAIL")
+DOCUMENTO_JSON=$(json_escape "$DOCUMENTO")
+DOMICILIO_JSON=$(json_escape "$DOMICILIO")
 req POST "$URL_DONADORES/donadores" \
-  "{\"nombre\":\"$NOMBRE\",\"apellido\":\"$APELLIDO\",\"edad\":$EDAD,\"email\":\"$EMAIL\",\"nroDocumento\":\"$DOCUMENTO\",\"domicilio\":\"$DOMICILIO\"}"
+  "{\"nombre\":\"$NOMBRE_JSON\",\"apellido\":\"$APELLIDO_JSON\",\"edad\":$EDAD,\"email\":\"$EMAIL_JSON\",\"nroDocumento\":\"$DOCUMENTO_JSON\",\"domicilio\":\"$DOMICILIO_JSON\"}"
 
 DONADOR=$(campo '.id')
 creado "donador" "$DONADOR" || { resumen; exit 1; }

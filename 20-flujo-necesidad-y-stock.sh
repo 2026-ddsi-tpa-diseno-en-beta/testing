@@ -62,8 +62,10 @@ titulo "2. Generar stock de un producto sin necesidades"
 detalle "si no hay necesidades para el producto, las unidades donadas van al stock"
 
 paso "Producto nuevo (para arrancar sin necesidades asociadas)"
+SUBCAT_FIELD=""
+[ -n "${SUBCATEGORIA:-}" ] && SUBCAT_FIELD=",\"subcategoriaID\":\"$SUBCATEGORIA\""
 req POST "$URL_DONACIONES/productos" \
-  "{\"nombre\":\"$PREFIJO Stock $SELLO\",\"descripcion\":\"producto para probar stock\",\"categoriaID\":\"$CATEGORIA\"}"
+  "{\"nombre\":\"$PREFIJO Stock $SELLO\",\"descripcion\":\"producto para probar stock\",\"categoriaID\":\"$CATEGORIA\"$SUBCAT_FIELD}"
 PROD_STOCK=$(campo '.id')
 if [ -z "$PROD_STOCK" ] || [ "$PROD_STOCK" = "null" ]; then
   falla "no se pudo crear el producto"; resumen; exit 1
@@ -72,7 +74,7 @@ ok "producto: $PROD_STOCK"
 
 paso "Confirmar que no tiene necesidades"
 req GET "$URL_DONADORES/necesidades?productoSolicitadoID=$PROD_STOCK"
-CANT_NEC=$(printf '%s' "$HTTP_BODY" | python3 -c "
+CANT_NEC=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try:
     d=json.load(sys.stdin); print(len(d) if isinstance(d,list) else 0)
@@ -99,7 +101,7 @@ if [ "${STOCK:-0}" = "0" ] && [ "$SIMULAR" = "si" ]; then
   paso "Sin stock. Simulando lo que haria el Worker"
   detalle "busco el paquete pendiente y lo marco EN_STOCK via el endpoint interno"
   req GET "$URL_LOGISTICA/depositos/$DEPOSITO"
-  PAQUETE=$(printf '%s' "$HTTP_BODY" | python3 -c "
+  PAQUETE=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()

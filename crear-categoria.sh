@@ -37,7 +37,7 @@ titulo "CREAR UNA CATEGORIA"
 if [ -z "$PADRE" ] && [ -t 0 ]; then
   req GET "$URL_DONACIONES/categorias" >/dev/null 2>&1
   if [ "$HTTP_CODE" = "200" ]; then
-    RAICES=$(printf '%s' "$HTTP_BODY" | python3 -c "
+    RAICES=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()
@@ -77,7 +77,7 @@ if [ -n "$PADRE" ]; then
   verificar "el padre es el indicado" "$PADRE" "$(campo '.categoriaPadreID')"
   paso "Subcategorias que tiene ahora el padre $PADRE"
   req GET "$URL_DONACIONES/categorias/$PADRE/subcategorias"
-  printf '%s' "$HTTP_BODY" | python3 -c "
+  printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()

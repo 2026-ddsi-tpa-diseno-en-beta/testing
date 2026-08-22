@@ -48,7 +48,7 @@ if [ -t 0 ] && { [ -z "$DONADOR_ARG" ] || [ -z "$PRODUCTO_ARG" ]; }; then
   if [ -z "$DONADOR_ARG" ]; then
     req GET "$URL_DONADORES/donadores" >/dev/null 2>&1
     detalle "donadores que existen (ojo con el estado: un BANEADO no puede donar):"
-    printf '%s' "$HTTP_BODY" | python3 -c "
+    printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()
@@ -59,7 +59,7 @@ for x in d[-8:]:
   if [ -z "$PRODUCTO_ARG" ]; then
     req GET "$URL_DONACIONES/productos" >/dev/null 2>&1
     detalle "productos que existen:"
-    printf '%s' "$HTTP_BODY" | python3 -c "
+    printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try: d=json.load(sys.stdin)
 except Exception: sys.exit()
@@ -108,7 +108,7 @@ req GET "$URL_DONACIONES/productos/$PRODUCTO_ARG" >/dev/null 2>&1
 [ "$HTTP_CODE" = "200" ] && ok "el producto existe" || falla "el producto $PRODUCTO_ARG no existe (HTTP $HTTP_CODE)"
 
 req GET "$URL_DONADORES/necesidades?productoSolicitadoID=$PRODUCTO_ARG" >/dev/null 2>&1
-NECESIDADES=$(printf '%s' "$HTTP_BODY" | python3 -c "
+NECESIDADES=$(printf '%s' "$HTTP_BODY" | python_json -c "
 import json,sys
 try:
     d=json.load(sys.stdin); print(len(d) if isinstance(d,list) else 0)

@@ -29,12 +29,26 @@ O todo de una:
 ./correr-todo.sh 2>&1 | tee corrida.log
 ```
 
+Para mostrar un cambio puntual sin imprimir todo el sistema:
+
+```bash
+./ver-estado.sh donacion --esperado ACEPTADA
+./ver-estado.sh donador ok --esperado VERIFICADO
+./ver-estado.sh asignacion --esperado COMPLETADA
+./ver-estado.sh stock "$PRODUCTO" --esperado 1
+```
+
+Si no pasas un ID, usa los IDs que quedaron guardados en `.estado`.
+
 ## Los scripts
 
 Ver también la [guía rápida](GUIA.md) con las recetas para casos concretos.
 
 | Script | Qué hace |
 |---|---|
+| `ver-donador.sh` | Explica un donador: estado, puede-donar, quejas, estadisticas y donaciones por estado. |
+| `ver-logistica.sh` | Explica Logistica: deposito, stock, paquete, asignacion y cola de matchmaking. |
+| `ver-estado.sh` | Muestra un objeto puntual: donacion, donador, asignacion, necesidad, stock, paquete o deposito. Sirve para mostrar cambios de estado durante la demo. |
 | `estado.sh` | Muestra el estado actual de los 4 módulos. Solo lecturas, no modifica nada. |
 | `keepalive.sh` | Le pega a los 4 servicios cada 3 min para que Render no los duerma. **Dejarlo corriendo durante la presentación.** |
 | `00-salud.sh` | Chequea que los 4 servicios respondan y los deja despiertos. **Correr siempre primero.** |
@@ -45,11 +59,16 @@ Ver también la [guía rápida](GUIA.md) con las recetas para casos concretos.
 | `12-flujo-procesar-donador.sh` | Flujo 3: misiones, insignias y el cron de Incentivos. |
 | `13-flujo-estadisticas.sh` | Flujo 4: compara lo que dice Incentivos contra lo que reporta Donadores. |
 | `14-flujo-queja-baneo.sh` | Flujo 5: la queja end-to-end y los umbrales de estado del donador. |
+| **Incentivos y misiones** | |
+| `23-flujo-cumplir-mision-insignia.sh` | Crea una mision COMPLETITUD, la cumple con 3 categorias y verifica que se otorgue la insignia. |
 | **Los flujos nuevos de la Entrega 4** | |
 | `20-flujo-necesidad-y-stock.sh` | Validación del producto, consulta de stock y asignación inmediata (el caso N-1). |
 | `21-flujo-parcialidad-por-tipo.sh` | Con stock insuficiente: EXTRAORDINARIA acepta parcial, RECURRENTE no. |
 | `22-contratos-del-bot.sh` | Los endpoints que consume el bot, con los mismos bodies que él manda. |
 | **Crear cosas de a una** (por argumento o preguntando) | |
+| `cargar-quejas.sh` | Agrega quejas a un donador y muestra como cambian quejas, estado y puede-donar. |
+| `modificar-necesidad.sh` | Cambia descripcion, cantidad, urgencia, tipo, producto o entidad de una necesidad existente. |
+| `modificar-deposito.sh` | Cambia el algoritmo de matchmaking de un deposito y valida el antes/despues. |
 | `crear-donador.sh` | Un donador, opcionalmente con N quejas para dejarlo en un estado concreto. |
 | `crear-categoria.sh` | Una categoría, o una subcategoría si le pasás el padre. |
 | `crear-producto.sh` | Un producto. Te avisa si va a fallar la validación del identificador. |
