@@ -6,9 +6,10 @@ URL_DONADORES="${URL_DONADORES:-https://entrega-2-lolasimone.onrender.com}"
 URL_INCENTIVOS="${URL_INCENTIVOS:-https://entrega-2-melinazingales.onrender.com}"
 URL_LOGISTICA="${URL_LOGISTICA:-https://donatrack-api-logistica-diseno-en-beta.onrender.com}"
 
-# Workers de Logistica
-URL_LOGISTICA_WORKER_1="${URL_LOGISTICA_WORKER_1:-https://https://donatrack-logistica-worker-1.onrender.com/health}"
-URL_LOGISTICA_WORKER_2="${URL_LOGISTICA_WORKER_2:-https://https://donatrack-logistica-worker-2.onrender.com/health}"
+# Workers de Logistica. Solo el host, sin path: cada script agrega
+# /actuator/health o /actuator/metrics/... segun lo que necesite.
+URL_LOGISTICA_WORKER_1="${URL_LOGISTICA_WORKER_1:-https://donatrack-logistica-worker-1.onrender.com}"
+URL_LOGISTICA_WORKER_2="${URL_LOGISTICA_WORKER_2:-https://donatrack-logistica-worker-2.onrender.com}"
 
 # Timeout por request en segundos. Render free tier puede tardar 90s+ en despertar.
 TIMEOUT="${TIMEOUT:-200}"

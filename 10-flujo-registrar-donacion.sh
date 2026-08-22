@@ -83,32 +83,43 @@ else
   falla "NO se creo ninguna asignacion"
 
   # Las metricas de la cola dicen exactamente en que eslabon se corto.
+  # El export de prometheus quedo deshabilitado al migrar a Grafana: se leen los
+  # contadores del endpoint JSON /actuator/metrics. La API publica; el consumo
+  # pasa en los workers (instancias aparte en Render).
   paso "Diagnostico automatico: que paso con el mensaje"
-  METRICAS=$(curl -sS -m "$TIMEOUT" "$URL_LOGISTICA/actuator/prometheus" 2>/dev/null)
-  leer_metrica() {
-    printf '%s' "$METRICAS" | grep "^$1" | head -1 | awk '{print $2}' | cut -d. -f1
+  leer_contador() {
+    curl -sS -m 60 "$1/actuator/metrics/$2" 2>/dev/null \
+      | sed -n 's/.*"value":\([0-9][0-9.]*\).*/\1/p' | head -1 | cut -d. -f1
   }
-  PUB=$(leer_metrica "rabbitmq_published_total")
-  CONS=$(leer_metrica "rabbitmq_consumed_total")
-  REJ=$(leer_metrica "rabbitmq_rejected_total")
-  LISTENERS=$(printf '%s' "$METRICAS" | grep -c "spring_rabbitmq_listener")
+  PUB=$(leer_contador "$URL_LOGISTICA" "rabbitmq.published")
+  CONS=0; REJ=0; VIVOS=0
+  for wurl in "${URL_LOGISTICA_WORKER_1:-}" "${URL_LOGISTICA_WORKER_2:-}"; do
+    [ -n "$wurl" ] || continue
+    c=$(leer_contador "$wurl" "rabbitmq.consumed")
+    r=$(leer_contador "$wurl" "rabbitmq.rejected")
+    if [ -n "$c" ]; then CONS=$((CONS + c)); VIVOS=$((VIVOS + 1)); fi
+    [ -n "$r" ] && REJ=$((REJ + r))
+  done
 
-  detalle "publicados: ${PUB:-?}   consumidos: ${CONS:-?}   rechazados: ${REJ:-?}"
-  detalle "listeners registrados en la API: ${LISTENERS:-0}"
+  detalle "publicados (API): ${PUB:-?}   consumidos (workers): $CONS   rechazados: $REJ"
+  detalle "workers respondiendo metricas: $VIVOS"
   echo ""
 
   if [ "${PUB:-0}" = "0" ]; then
     echo "    ${C_WARN}El mensaje NO se publico a la cola.${C_OFF}"
     echo "    Revisar la conexion a RabbitMQ: la variable RABBITMQ_URL en Render"
     echo "    y el estado del broker en $URL_LOGISTICA/actuator/health"
+  elif [ "$VIVOS" = "0" ]; then
+    echo "    ${C_WARN}Ningun worker respondio metricas.${C_OFF}"
+    echo "    O estan caidos/dormidos en Render, o faltan URL_LOGISTICA_WORKER_1/2"
+    echo "    en tu config.sh (ver config.sh.example). Correr 00-salud.sh primero."
   elif [ "${CONS:-0}" = "0" ]; then
-    echo "    ${C_WARN}Se publico pero NADIE lo consumio.${C_OFF}"
-    echo "    No hay ningun Worker escuchando la cola."
+    echo "    ${C_WARN}Se publico pero los workers no lo consumieron.${C_OFF}"
     echo ""
-    echo "    Es lo esperable si los componentes del worker estan con @Profile(\"worker\")"
-    echo "    y todavia no se levanto un segundo servicio con ese perfil activo."
+    echo "    Revisar en Render que los servicios worker esten suscriptos a la cola"
+    echo "    (RABBITMQ_URL correcta y misma queue que la API)."
     echo ""
-    echo "    Como levantar uno (el enunciado permite correrlo local durante la entrega):"
+    echo "    Alternativa: levantar un worker local (el enunciado lo permite durante la entrega):"
     echo "      cd Componente_Logistica"
     echo "      SPRING_PROFILES_ACTIVE=worker \\"
     echo "      RABBITMQ_URL=<la de CloudAMQP> \\"

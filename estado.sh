@@ -60,8 +60,12 @@ titulo "DISPONIBILIDAD"
 detalle "si algun servicio esta dormido, despertarlo puede tardar mas de 90s"
 for par in "Donaciones|$URL_DONACIONES" "Donadores|$URL_DONADORES" \
            "Incentivos|$URL_INCENTIVOS" "Logistica|$URL_LOGISTICA" \
-           "Worker-1|$URL_LOGISTICA_WORKER_1" "Worker-2|$URL_LOGISTICA_WORKER_2"; do
+           "Worker-1|${URL_LOGISTICA_WORKER_1:-}" "Worker-2|${URL_LOGISTICA_WORKER_2:-}"; do
   nombre="${par%%|*}"; url="${par##*|}"
+  if [ -z "$url" ]; then
+    printf "  %-12s %s\n" "$nombre" "(no configurado en config.sh; ver config.sh.example)" >&2
+    continue
+  fi
   inicio=$(date +%s)
   # curl con -w siempre imprime un codigo (000 si fallo), asi que no hace falta un || echo:
   # ponerlo duplicaba la salida y mostraba "000000".
@@ -161,19 +165,34 @@ else
 fi
 
 paso "Estado de la cola de matchmaking"
-METRICAS=$(curl -sS -m 60 "$URL_LOGISTICA/actuator/prometheus" 2>/dev/null)
-leer() { printf '%s' "$METRICAS" | grep "^$1" | head -1 | awk '{print $2}' | cut -d. -f1; }
-PUB=$(leer "rabbitmq_published_total"); CONS=$(leer "rabbitmq_consumed_total")
-REJ=$(leer "rabbitmq_rejected_total")
-LIS=$(printf '%s' "$METRICAS" | grep -c "spring_rabbitmq_listener")
-printf "  publicados: %-5s consumidos: %-5s rechazados: %-5s listeners en la API: %s\n" \
-  "${PUB:-?}" "${CONS:-?}" "${REJ:-?}" "${LIS:-0}" >&2
+# El export de prometheus quedo deshabilitado al migrar las metricas a Grafana,
+# asi que se leen los contadores del endpoint JSON /actuator/metrics. La API
+# publica; el consumo pasa en los workers (instancias aparte en Render), asi
+# que "consumidos" se suma de los workers, no de la API.
+leer_contador() {
+  curl -sS -m 60 "$1/actuator/metrics/$2" 2>/dev/null \
+    | sed -n 's/.*"value":\([0-9][0-9.]*\).*/\1/p' | head -1 | cut -d. -f1
+}
+PUB=$(leer_contador "$URL_LOGISTICA" "rabbitmq.published")
+CONS=0; REJ=0; VIVOS=0
+for wurl in "${URL_LOGISTICA_WORKER_1:-}" "${URL_LOGISTICA_WORKER_2:-}"; do
+  [ -n "$wurl" ] || continue
+  c=$(leer_contador "$wurl" "rabbitmq.consumed")
+  r=$(leer_contador "$wurl" "rabbitmq.rejected")
+  if [ -n "$c" ]; then CONS=$((CONS + c)); VIVOS=$((VIVOS + 1)); fi
+  [ -n "$r" ] && REJ=$((REJ + r))
+done
+printf "  publicados (API): %-5s consumidos (workers): %-5s rechazados: %-5s workers respondiendo: %s\n" \
+  "${PUB:-?}" "$CONS" "$REJ" "$VIVOS" >&2
+detalle "los contadores se resetean cuando una instancia se reinicia (Render los duerme): comparar tendencias, no absolutos"
 
-if [ "${PUB:-0}" != "0" ] && [ "${CONS:-0}" = "0" ]; then
-  aviso "hay mensajes publicados que nadie consumio: no hay Worker escuchando"
-elif [ "${REJ:-0}" != "0" ] && [ "${REJ:-0}" != "?" ]; then
+if [ "$VIVOS" = "0" ]; then
+  aviso "ningun worker respondio metricas: no se puede saber si la cola se consume"
+elif [ "$REJ" != "0" ]; then
   aviso "hay mensajes rechazados: el Worker esta fallando al procesarlos"
-elif [ "${CONS:-0}" != "0" ]; then
+elif [ -n "${PUB:-}" ] && [ "${PUB:-0}" -gt "$CONS" ] 2>/dev/null; then
+  aviso "hay mensajes publicados sin consumir (publicados=$PUB, consumidos=$CONS); puede ser por un reinicio reciente de los workers"
+elif [ "$CONS" != "0" ]; then
   ok "la cola se esta consumiendo"
 fi
 

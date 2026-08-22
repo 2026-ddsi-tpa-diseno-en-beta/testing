@@ -5,7 +5,7 @@
 set -u
 . "$(dirname "$0")/lib/comun.sh"
 
-titulo "SALUD DE LOS 4 SERVICIOS"
+titulo "SALUD DE LOS SERVICIOS (4 APIs + 2 workers)"
 echo "Despertando los deploys. La primera vez puede tardar varios minutos."
 
 chequear() {
@@ -47,8 +47,17 @@ chequear "Donadores y Entidades" "$URL_DONADORES"
 chequear "Incentivos" "$URL_INCENTIVOS"
 chequear "Logistica" "$URL_LOGISTICA"
 
-chequear "Worker-1" "$URL_LOGISTICA_WORKER_1"
-chequear "Worker-2" "$URL_LOGISTICA_WORKER_2"
+# Los workers pueden faltar en un config.sh viejo; avisar en vez de morir por set -u.
+if [ -n "${URL_LOGISTICA_WORKER_1:-}" ]; then
+  chequear "Worker-1" "$URL_LOGISTICA_WORKER_1"
+else
+  aviso "URL_LOGISTICA_WORKER_1 no configurada: copiala a tu config.sh desde config.sh.example"
+fi
+if [ -n "${URL_LOGISTICA_WORKER_2:-}" ]; then
+  chequear "Worker-2" "$URL_LOGISTICA_WORKER_2"
+else
+  aviso "URL_LOGISTICA_WORKER_2 no configurada: copiala a tu config.sh desde config.sh.example"
+fi
 
 paso "Modo de integracion de Donaciones"
 req GET "$URL_DONACIONES/admin/estado"
