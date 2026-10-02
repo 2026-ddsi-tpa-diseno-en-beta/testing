@@ -19,7 +19,7 @@ Se alertan caídas, errores HTTP, rechazos, falta de progreso del matchmaking, o
 
 ## MCP
 
-El módulo independiente está en `mcp-server`. Se guarda acá para que quede respaldado en remoto; puede extraerse a un repositorio propio sin modificar las APIs. No duplica reglas de negocio: adapta herramientas a HTTP. `contratos/tools.json` es el catálogo compartido con Telegram. `python testing/contratos/generar_catalogo.py` regenera las copias desde TPA.
+La implementación está en el repositorio independiente `mcp-server`, ubicado junto a `testing` dentro de TPA. Contiene el servidor MCP, gateway HTTP, catálogo y pruebas unitarias. Las APIs conservan las reglas de negocio; `testing` contiene los escenarios de integración y una copia del contrato en `contratos/tools.json`. `python mcp-server/scripts/generar_catalogo.py` regenera el catálogo y sus copias desde TPA. Para probar los seis flujos por MCP, compilar el nuevo repo y ejecutar `python testing/local/probar_integracion_mcp.py`.
 
 ## Telegram
 

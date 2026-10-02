@@ -24,7 +24,7 @@ class McpClient:
         self.log = (suite.OUTPUT / 'mcp.log').open('w', encoding='utf-8')
         self.process = subprocess.Popen(
             [env.get('JAVA_EXE', 'java'), '-jar',
-             str(suite.ROOT / 'testing/mcp-server/target/donatrack-mcp.jar')],
+             str(suite.ROOT / 'mcp-server/target/donatrack-mcp.jar')],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.log,
             text=True, encoding='utf-8', env=env,
             creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))

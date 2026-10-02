@@ -3,25 +3,10 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
-  mcp:
+  observabilidad:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
-          cache-dependency-path: mcp-server/pom.xml
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Verificar catálogo compartido
-        run: cmp contratos/tools.json mcp-server/src/main/resources/tools.json
-      - name: Compilar MCP y ejecutar pruebas
-        run: mvn -B -f mcp-server/pom.xml clean package
-      - name: Probar protocolo stdio
-        run: python mcp-server/scripts/probar_stdio.py
       - name: Validar reglas y escenarios de alertas
         run: |
           docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 check config prometheus.yml
@@ -34,6 +19,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: testing
+      - uses: actions/checkout@v4
+        with:
+          repository: 2026-ddsi-tpa-diseno-en-beta/mcp-server
+          ref: 3da3dcd50d48eb777ab57a022c3d68bd3661bc5b
+          path: mcp-server
       # Reproducible set of the four service versions verified for entrega 5.
       - uses: actions/checkout@v4
         with:
@@ -64,13 +54,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verificar catálogo compartido
+        run: cmp testing/contratos/tools.json mcp-server/src/main/resources/tools.json
       - name: Compilar servicios y MCP
         run: |
           mvn -B -DskipTests -f donaciones/pom.xml package
           mvn -B -DskipTests -f Donadores-Y-Entidades/pom.xml package
           mvn -B -DskipTests -f Componente_Logistica/pom.xml package
           mvn -B -DskipTests -f Incentivos/pom.xml package
-          mvn -B -f testing/mcp-server/pom.xml package
+          mvn -B -f mcp-server/pom.xml package
       - name: Ejecutar seis flujos a través de MCP
         run: python testing/local/probar_integracion_mcp.py
       - uses: actions/upload-artifact@v4
