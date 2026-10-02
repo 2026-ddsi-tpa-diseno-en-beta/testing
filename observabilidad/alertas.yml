@@ -1,0 +1,47 @@
+groups:
+  - name: donatrack
+    rules:
+      - alert: ComponenteNoDisponible
+        expr: up == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: "No responde {{ $labels.component }}"
+          description: "Revisar salud y logs del componente antes de iniciar la demo."
+      - alert: FallosDeIntegracion
+        expr: sum by (component) (rate(http_server_requests_seconds_count{status=~"5.."}[5m])) > 0.05
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: "Errores HTTP en {{ $labels.component }}"
+      - alert: DonacionesRechazadas
+        expr: sum(rate(donatrack_donaciones_rechazadas_total[5m])) / clamp_min(sum(rate(donatrack_donaciones_registradas_total[5m]) + rate(donatrack_donaciones_rechazadas_total[5m])), 0.001) > 0.3
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: "Mas del 30% de las donaciones son rechazadas"
+          description: "Revisar estados de donadores y metricas de quejas."
+      - alert: MatchmakingDetenido
+        expr: logistica_paquetes_pendientes > 0 and on () (sum(increase(logistica_asignaciones_matchmaking_total[5m])) + sum(increase(logistica_matchmaking_sin_asignacion_total[5m]))) == 0
+        for: 3m
+        labels: {severity: critical}
+        annotations:
+          summary: "Hay paquetes pendientes sin progreso del matchmaking"
+          description: "Revisar workers, conexion al broker y DLQ."
+      - alert: DepositosCasiLlenos
+        expr: logistica_deposito_ocupacion / clamp_min(logistica_deposito_capacidad, 1) > 0.9
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Ocupacion de los depositos superior al 90%"
+      - alert: MisionesRevocadas
+        expr: increase(donatrack_incentivos_misiones_revocadas_total[10m]) > 0
+        labels: {severity: warning}
+        annotations:
+          summary: "Un donador perdio una mision de donaciones exitosas"
+          description: "Correlacionar con quejas recientes en los logs."
+      - alert: CronIncentivosConErrores
+        expr: increase(donatrack_incentivos_cron_errores_total[5m]) > 0
+        labels: {severity: warning}
+        annotations:
+          summary: "El cron no pudo procesar uno o mas donadores"

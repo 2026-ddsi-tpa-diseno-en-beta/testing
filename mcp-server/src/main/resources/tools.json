@@ -1,0 +1,1952 @@
+[
+  {
+    "name": "listar_productos",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/productos",
+    "description": "Consultar todos los productos",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_producto",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/productos/{id}",
+    "description": "Consultar producto por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_producto",
+    "component": "donaciones",
+    "method": "POST",
+    "path": "/productos",
+    "description": "Dar de alta producto. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            },
+            "categoriaID": {
+              "type": "string"
+            },
+            "subcategoriaID": {
+              "type": "string"
+            },
+            "identificadorID": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "nombre",
+            "descripcion",
+            "categoriaID"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_producto",
+    "component": "donaciones",
+    "method": "PUT",
+    "path": "/productos/{id}",
+    "description": "Modificar producto existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            },
+            "categoriaID": {
+              "type": "string"
+            },
+            "subcategoriaID": {
+              "type": "string"
+            },
+            "identificadorID": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "nombre",
+            "descripcion",
+            "categoriaID"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_producto",
+    "component": "donaciones",
+    "method": "DELETE",
+    "path": "/productos/{id}",
+    "description": "Dar de baja producto existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_categorias",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/categorias",
+    "description": "Consultar todos los categorias",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_categoria",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/categorias/{id}",
+    "description": "Consultar categoria por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_categoria",
+    "component": "donaciones",
+    "method": "POST",
+    "path": "/categorias",
+    "description": "Dar de alta categoria. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            },
+            "categoriaPadreID": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "nombre",
+            "descripcion"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_categoria",
+    "component": "donaciones",
+    "method": "PUT",
+    "path": "/categorias/{id}",
+    "description": "Modificar categoria existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            },
+            "categoriaPadreID": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "nombre",
+            "descripcion"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_categoria",
+    "component": "donaciones",
+    "method": "DELETE",
+    "path": "/categorias/{id}",
+    "description": "Dar de baja categoria existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_identificadores",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/identificadores",
+    "description": "Consultar todos los identificadores",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_identificador",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/identificadores/{id}",
+    "description": "Consultar identificador por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_identificador",
+    "component": "donaciones",
+    "method": "POST",
+    "path": "/identificadores",
+    "description": "Dar de alta identificador. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "CODIGODEBARRAS",
+                "QR"
+              ]
+            },
+            "descripcion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tipo",
+            "descripcion"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_identificador",
+    "component": "donaciones",
+    "method": "PUT",
+    "path": "/identificadores/{id}",
+    "description": "Modificar identificador existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "CODIGODEBARRAS",
+                "QR"
+              ]
+            },
+            "descripcion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tipo",
+            "descripcion"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_identificador",
+    "component": "donaciones",
+    "method": "DELETE",
+    "path": "/identificadores/{id}",
+    "description": "Dar de baja identificador existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_donadores",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/donadores",
+    "description": "Consultar todos los donadores",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_donador",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/donadores/{id}",
+    "description": "Consultar donador por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_donador",
+    "component": "donadores",
+    "method": "POST",
+    "path": "/donadores",
+    "description": "Dar de alta donador. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "apellido": {
+              "type": "string"
+            },
+            "edad": {
+              "type": "integer"
+            },
+            "email": {
+              "type": "string"
+            },
+            "nroDocumento": {
+              "type": "string"
+            },
+            "domicilio": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "nombre",
+            "apellido",
+            "edad",
+            "email",
+            "nroDocumento",
+            "domicilio"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_donador",
+    "component": "donadores",
+    "method": "PUT",
+    "path": "/donadores/{id}",
+    "description": "Modificar donador existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "apellido": {
+              "type": "string"
+            },
+            "edad": {
+              "type": "integer"
+            },
+            "email": {
+              "type": "string"
+            },
+            "nroDocumento": {
+              "type": "string"
+            },
+            "domicilio": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "nombre",
+            "apellido",
+            "edad",
+            "email",
+            "nroDocumento",
+            "domicilio"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_donador",
+    "component": "donadores",
+    "method": "DELETE",
+    "path": "/donadores/{id}",
+    "description": "Dar de baja donador existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_entidades",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/entidades",
+    "description": "Consultar todos los entidades",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_entidad",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/entidades/{id}",
+    "description": "Consultar entidad por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_entidad",
+    "component": "donadores",
+    "method": "POST",
+    "path": "/entidades",
+    "description": "Dar de alta entidad. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "razonSocial": {
+              "type": "string"
+            },
+            "domicilio": {
+              "type": "string"
+            },
+            "telefono": {
+              "type": "string"
+            },
+            "correo": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "razonSocial",
+            "domicilio",
+            "telefono",
+            "correo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_entidad",
+    "component": "donadores",
+    "method": "PUT",
+    "path": "/entidades/{id}",
+    "description": "Modificar entidad existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "razonSocial": {
+              "type": "string"
+            },
+            "domicilio": {
+              "type": "string"
+            },
+            "telefono": {
+              "type": "string"
+            },
+            "correo": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "razonSocial",
+            "domicilio",
+            "telefono",
+            "correo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_entidad",
+    "component": "donadores",
+    "method": "DELETE",
+    "path": "/entidades/{id}",
+    "description": "Dar de baja entidad existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_necesidades",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/necesidades",
+    "description": "Consultar todos los necesidades",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_necesidad",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/necesidades/{id}",
+    "description": "Consultar necesidad por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_necesidad",
+    "component": "donadores",
+    "method": "POST",
+    "path": "/necesidades",
+    "description": "Dar de alta necesidad. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "entidadID": {
+              "type": "string"
+            },
+            "productoSolicitadoID": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            },
+            "cantidadObjetivo": {
+              "type": "integer"
+            },
+            "nivelDeUrgencia": {
+              "type": "integer"
+            },
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "EXTRAORDINARIA",
+                "RECURRENTE"
+              ]
+            }
+          },
+          "required": [
+            "entidadID",
+            "productoSolicitadoID",
+            "descripcion",
+            "cantidadObjetivo",
+            "nivelDeUrgencia",
+            "tipo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_necesidad",
+    "component": "donadores",
+    "method": "PUT",
+    "path": "/necesidades/{id}",
+    "description": "Modificar necesidad existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "entidadID": {
+              "type": "string"
+            },
+            "productoSolicitadoID": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            },
+            "cantidadObjetivo": {
+              "type": "integer"
+            },
+            "nivelDeUrgencia": {
+              "type": "integer"
+            },
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "EXTRAORDINARIA",
+                "RECURRENTE"
+              ]
+            }
+          },
+          "required": [
+            "entidadID",
+            "productoSolicitadoID",
+            "descripcion",
+            "cantidadObjetivo",
+            "nivelDeUrgencia",
+            "tipo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_necesidad",
+    "component": "donadores",
+    "method": "DELETE",
+    "path": "/necesidades/{id}",
+    "description": "Dar de baja necesidad existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_depositos",
+    "component": "logistica",
+    "method": "GET",
+    "path": "/depositos",
+    "description": "Consultar todos los depositos",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_deposito",
+    "component": "logistica",
+    "method": "GET",
+    "path": "/depositos/{id}",
+    "description": "Consultar deposito por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_deposito",
+    "component": "logistica",
+    "method": "POST",
+    "path": "/depositos",
+    "description": "Dar de alta deposito. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "direccion": {
+              "type": "string"
+            },
+            "capacidadMaxima": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "nombre",
+            "direccion",
+            "capacidadMaxima"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_deposito",
+    "component": "logistica",
+    "method": "PUT",
+    "path": "/depositos/{id}",
+    "description": "Modificar deposito existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "direccion": {
+              "type": "string"
+            },
+            "capacidadMaxima": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "nombre",
+            "direccion",
+            "capacidadMaxima"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_deposito",
+    "component": "logistica",
+    "method": "DELETE",
+    "path": "/depositos/{id}",
+    "description": "Dar de baja deposito existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_insignias",
+    "component": "incentivos",
+    "method": "GET",
+    "path": "/insignias",
+    "description": "Consultar todos los insignias",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_insignia",
+    "component": "incentivos",
+    "method": "GET",
+    "path": "/insignias/{id}",
+    "description": "Consultar insignia por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_insignia",
+    "component": "incentivos",
+    "method": "POST",
+    "path": "/insignias",
+    "description": "Dar de alta insignia. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "nombre",
+            "descripcion"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_insignia",
+    "component": "incentivos",
+    "method": "PUT",
+    "path": "/insignias/{id}",
+    "description": "Modificar insignia existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "nombre",
+            "descripcion"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_insignia",
+    "component": "incentivos",
+    "method": "DELETE",
+    "path": "/insignias/{id}",
+    "description": "Dar de baja insignia existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_misiones",
+    "component": "incentivos",
+    "method": "GET",
+    "path": "/misiones",
+    "description": "Consultar todos los misiones",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_mision",
+    "component": "incentivos",
+    "method": "GET",
+    "path": "/misiones/{id}",
+    "description": "Consultar mision por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_mision",
+    "component": "incentivos",
+    "method": "POST",
+    "path": "/misiones",
+    "description": "Dar de alta mision. Devuelve el ID generado por DonaTrack.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "insigniaID": {
+              "type": "string"
+            },
+            "categoriaInicio": {
+              "type": "string",
+              "enum": [
+                "OCASIONAL",
+                "COLABORADOR",
+                "TRANSFORMADOR",
+                "SALVADOR",
+                "REVOLUCIONARIO"
+              ]
+            },
+            "categoriaFin": {
+              "type": "string",
+              "enum": [
+                "OCASIONAL",
+                "COLABORADOR",
+                "TRANSFORMADOR",
+                "SALVADOR",
+                "REVOLUCIONARIO"
+              ]
+            },
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "COMPLETITUD",
+                "DONACIONES_EXITOSAS",
+                "DONACIONES_ASCENDENTES",
+                "REVOLUCION_DONADORA"
+              ]
+            }
+          },
+          "required": [
+            "nombre",
+            "insigniaID",
+            "categoriaInicio",
+            "categoriaFin",
+            "tipo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "modificar_mision",
+    "component": "incentivos",
+    "method": "PUT",
+    "path": "/misiones/{id}",
+    "description": "Modificar mision existente respetando las reglas y referencias del componente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "nombre": {
+              "type": "string"
+            },
+            "insigniaID": {
+              "type": "string"
+            },
+            "categoriaInicio": {
+              "type": "string",
+              "enum": [
+                "OCASIONAL",
+                "COLABORADOR",
+                "TRANSFORMADOR",
+                "SALVADOR",
+                "REVOLUCIONARIO"
+              ]
+            },
+            "categoriaFin": {
+              "type": "string",
+              "enum": [
+                "OCASIONAL",
+                "COLABORADOR",
+                "TRANSFORMADOR",
+                "SALVADOR",
+                "REVOLUCIONARIO"
+              ]
+            },
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "COMPLETITUD",
+                "DONACIONES_EXITOSAS",
+                "DONACIONES_ASCENDENTES",
+                "REVOLUCION_DONADORA"
+              ]
+            }
+          },
+          "required": [
+            "nombre",
+            "insigniaID",
+            "categoriaInicio",
+            "categoriaFin",
+            "tipo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "eliminar_mision",
+    "component": "incentivos",
+    "method": "DELETE",
+    "path": "/misiones/{id}",
+    "description": "Dar de baja mision existente. Puede rechazarse si está en uso.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_donaciones",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/donaciones",
+    "description": "Consultar donaciones registradas",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_donacion",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/donaciones/{id}",
+    "description": "Consultar el estado de una donación",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "realizar_donacion",
+    "component": "donaciones",
+    "method": "POST",
+    "path": "/donaciones",
+    "description": "Registrar una donación de un producto existente a un depósito con matchmaking configurado. DonaTrack valida al donador y procesa la asignación asincrónicamente.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "donadorID": {
+              "type": "string"
+            },
+            "depositoID": {
+              "type": "string"
+            },
+            "productoID": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            },
+            "cantidad": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "donadorID",
+            "depositoID",
+            "productoID",
+            "descripcion",
+            "cantidad"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "historial_donacion",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/donaciones/{id}/historial",
+    "description": "Consultar trazabilidad de estados de la donación",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "registrar_queja",
+    "component": "donaciones",
+    "method": "POST",
+    "path": "/donaciones/{id}/quejas",
+    "description": "Registrar una queja sobre una donación ya entregada (ACEPTADA). Actualiza donación y donador.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "descripcion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "descripcion"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "estadisticas_donador",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/donadores/{id}/estadisticas",
+    "description": "Obtener estado, categoría, insignias y misión actual del donador",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "quejas_donador",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/donadores/{id}/quejas",
+    "description": "Consultar historial de quejas del donador",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "estado_donador",
+    "component": "donadores",
+    "method": "PATCH",
+    "path": "/donadores/{id}/estado",
+    "description": "Establecer manualmente el estado de un donador",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "estado": {
+              "type": "string",
+              "enum": [
+                "VERIFICADO",
+                "SOSPECHOSO",
+                "BANEADO"
+              ]
+            }
+          },
+          "required": [
+            "estado"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "consultar_stock",
+    "component": "logistica",
+    "method": "GET",
+    "path": "/stock/{id}",
+    "description": "Consultar cantidad disponible del producto identificado por id",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "listar_asignaciones",
+    "component": "logistica",
+    "method": "GET",
+    "path": "/asignaciones",
+    "description": "Consultar asignaciones, estados, paquetes y origen (matchmaking o solicitud de entidad)",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "buscar_asignacion",
+    "component": "logistica",
+    "method": "GET",
+    "path": "/asignaciones/{id}",
+    "description": "Consultar una asignación por ID",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "reportar_entrega",
+    "component": "logistica",
+    "method": "POST",
+    "path": "/entregas",
+    "description": "Reportar entrega de un paquete asignado: completa asignación, satisface necesidad y acepta la donación.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "reportar_entrega_lote",
+    "component": "logistica",
+    "method": "POST",
+    "path": "/entregas/lote",
+    "description": "Reportar una única entrega física de varios paquetes asignados a la misma necesidad. Para recurrentes el lote debe cubrir el objetivo completo.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "paqueteIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "paqueteIds"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "periodo_necesidad",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/necesidades/{id}/periodo",
+    "description": "Consultar si una necesidad es semanal o mensual y el inicio del período vigente",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "crear_necesidad_mensual",
+    "component": "donadores",
+    "method": "POST",
+    "path": "/necesidades?periodo=MENSUAL",
+    "description": "Registrar una necesidad recurrente mensual. DonaTrack valida el producto y reserva stock si alcanza el objetivo.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "entidadID": {
+              "type": "string"
+            },
+            "productoSolicitadoID": {
+              "type": "string"
+            },
+            "descripcion": {
+              "type": "string"
+            },
+            "cantidadObjetivo": {
+              "type": "integer"
+            },
+            "nivelDeUrgencia": {
+              "type": "integer"
+            },
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "RECURRENTE"
+              ]
+            }
+          },
+          "required": [
+            "entidadID",
+            "productoSolicitadoID",
+            "descripcion",
+            "cantidadObjetivo",
+            "nivelDeUrgencia",
+            "tipo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "configurar_matchmaking",
+    "component": "logistica",
+    "method": "PATCH",
+    "path": "/depositos/{id}/algoritmo",
+    "description": "Configurar algoritmo del depósito antes de recibir donaciones.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "algoritmo": {
+              "type": "string",
+              "enum": [
+                "SUB_ATENDIDOS",
+                "PRIORIDAD_POR_SCORE"
+              ]
+            }
+          },
+          "required": [
+            "algoritmo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "procesar_donador",
+    "component": "incentivos",
+    "method": "POST",
+    "path": "/procesamiento/{id}",
+    "description": "Evaluar misiones y actualizar categoría e insignias; también revoca donaciones exitosas si hay quejas.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "asignar_mision",
+    "component": "incentivos",
+    "method": "POST",
+    "path": "/misiones/donador/{id}",
+    "description": "Asignar al donador id una misión del catálogo; respeta categoría y secuencia.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "asignar_insignia",
+    "component": "incentivos",
+    "method": "POST",
+    "path": "/insignias/donador/{id}",
+    "description": "Asignar manualmente una insignia del catálogo a un donador registrado.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        },
+        "datos": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "datos"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "mision_donador",
+    "component": "incentivos",
+    "method": "GET",
+    "path": "/misiones/donador/{id}",
+    "description": "Consultar misión en curso del donador (sin contenido si no tiene misión activa)",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "insignias_donador",
+    "component": "incentivos",
+    "method": "GET",
+    "path": "/insignias/donador/{id}",
+    "description": "Consultar insignias obtenidas por el donador",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "salud_donaciones",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/actuator/health",
+    "description": "Consultar disponibilidad del componente donaciones",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "metricas_donaciones",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/actuator/metrics",
+    "description": "Consultar nombres de métricas disponibles en donaciones",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "salud_donadores",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/actuator/health",
+    "description": "Consultar disponibilidad del componente donadores",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "metricas_donadores",
+    "component": "donadores",
+    "method": "GET",
+    "path": "/actuator/metrics",
+    "description": "Consultar nombres de métricas disponibles en donadores",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "salud_logistica",
+    "component": "logistica",
+    "method": "GET",
+    "path": "/actuator/health",
+    "description": "Consultar disponibilidad del componente logistica",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "metricas_logistica",
+    "component": "logistica",
+    "method": "GET",
+    "path": "/actuator/metrics",
+    "description": "Consultar nombres de métricas disponibles en logistica",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "salud_incentivos",
+    "component": "incentivos",
+    "method": "GET",
+    "path": "/actuator/health",
+    "description": "Consultar disponibilidad del componente incentivos",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "metricas_incentivos",
+    "component": "incentivos",
+    "method": "GET",
+    "path": "/actuator/metrics",
+    "description": "Consultar nombres de métricas disponibles en incentivos",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+]

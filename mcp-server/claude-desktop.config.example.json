@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "donatrack": {
+      "command": "java",
+      "args": [
+        "-jar",
+        "RUTA_ABSOLUTA/testing/mcp-server/target/donatrack-mcp.jar"
+      ],
+      "env": {
+        "DONACIONES_API_URL": "http://localhost:8081",
+        "DONADORES_API_URL": "http://localhost:8082",
+        "LOGISTICA_API_URL": "http://localhost:8083",
+        "INCENTIVOS_API_URL": "http://localhost:8084"
+      }
+    }
+  }
+}

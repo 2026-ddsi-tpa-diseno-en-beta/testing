@@ -1,0 +1,29 @@
+name: Contratos y MCP
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: mcp-server/pom.xml
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verificar catálogo compartido
+        run: cmp contratos/tools.json mcp-server/src/main/resources/tools.json
+      - name: Compilar MCP y ejecutar pruebas
+        run: mvn -B -f mcp-server/pom.xml clean package
+      - name: Probar protocolo stdio
+        run: python mcp-server/scripts/probar_stdio.py
+      - name: Validar reglas y escenarios de alertas
+        run: |
+          docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 check config prometheus.yml
+          docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 test rules alertas.test.yml
+          docker run --rm --entrypoint /bin/amtool -v "$PWD/observabilidad:/etc/alertmanager:ro" prom/alertmanager:v0.28.1 check-config /etc/alertmanager/alertmanager.yml

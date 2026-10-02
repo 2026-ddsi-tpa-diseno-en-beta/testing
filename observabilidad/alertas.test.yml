@@ -1,0 +1,150 @@
+{
+  "rule_files": [
+    "alertas.yml"
+  ],
+  "evaluation_interval": "1m",
+  "tests": [
+    {
+      "name": "componente caido durante dos minutos",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "up{component=\"donaciones\"}",
+          "values": "0x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "3m",
+          "alertname": "ComponenteNoDisponible",
+          "exp_alerts": [
+            {
+              "exp_labels": {
+                "component": "donaciones",
+                "severity": "critical"
+              },
+              "exp_annotations": {
+                "summary": "No responde donaciones",
+                "description": "Revisar salud y logs del componente antes de iniciar la demo."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "paquetes pendientes sin callbacks",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "logistica_paquetes_pendientes{component=\"logistica\"}",
+          "values": "1x10"
+        },
+        {
+          "series": "logistica_asignaciones_matchmaking_total{component=\"logistica\"}",
+          "values": "0x10"
+        },
+        {
+          "series": "logistica_matchmaking_sin_asignacion_total{component=\"logistica\"}",
+          "values": "0x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "6m",
+          "alertname": "MatchmakingDetenido",
+          "exp_alerts": [
+            {
+              "exp_labels": {
+                "component": "logistica",
+                "severity": "critical"
+              },
+              "exp_annotations": {
+                "summary": "Hay paquetes pendientes sin progreso del matchmaking",
+                "description": "Revisar workers, conexion al broker y DLQ."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "primeras donaciones todas rechazadas",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "donatrack_donaciones_registradas_total",
+          "values": "0x10"
+        },
+        {
+          "series": "donatrack_donaciones_rechazadas_total",
+          "values": "0+1x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "6m",
+          "alertname": "DonacionesRechazadas",
+          "exp_alerts": [
+            {
+              "exp_labels": {
+                "severity": "warning"
+              },
+              "exp_annotations": {
+                "summary": "Mas del 30% de las donaciones son rechazadas",
+                "description": "Revisar estados de donadores y metricas de quejas."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flujo normal no dispara alertas",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "up{component=\"donaciones\"}",
+          "values": "1x10"
+        },
+        {
+          "series": "donatrack_donaciones_registradas_total",
+          "values": "0+5x10"
+        },
+        {
+          "series": "donatrack_donaciones_rechazadas_total",
+          "values": "0x10"
+        },
+        {
+          "series": "logistica_paquetes_pendientes{component=\"logistica\"}",
+          "values": "0x10"
+        },
+        {
+          "series": "logistica_asignaciones_matchmaking_total{component=\"logistica\"}",
+          "values": "0+1x10"
+        },
+        {
+          "series": "logistica_matchmaking_sin_asignacion_total{component=\"logistica\"}",
+          "values": "0x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "6m",
+          "alertname": "ComponenteNoDisponible",
+          "exp_alerts": []
+        },
+        {
+          "eval_time": "6m",
+          "alertname": "DonacionesRechazadas",
+          "exp_alerts": []
+        },
+        {
+          "eval_time": "6m",
+          "alertname": "MatchmakingDetenido",
+          "exp_alerts": []
+        }
+      ]
+    }
+  ]
+}
