@@ -27,3 +27,54 @@ jobs:
           docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 check config prometheus.yml
           docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 test rules alertas.test.yml
           docker run --rm --entrypoint /bin/amtool -v "$PWD/observabilidad:/etc/alertmanager:ro" prom/alertmanager:v0.28.1 check-config /etc/alertmanager/alertmanager.yml
+  integracion-mcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: testing
+      # Reproducible set of the four service versions verified for entrega 5.
+      - uses: actions/checkout@v4
+        with:
+          repository: 2026-ddsi-tpa-diseno-en-beta/donaciones
+          ref: e914b6a6602f048648f3e2108b5d0be68e17e106
+          path: donaciones
+      - uses: actions/checkout@v4
+        with:
+          repository: 2026-ddsi-tpa-diseno-en-beta/Donadores-Y-Entidades
+          ref: 299003ef9cb94dec2570400ce2c32a8cdc6b15c9
+          path: Donadores-Y-Entidades
+      - uses: actions/checkout@v4
+        with:
+          repository: 2026-ddsi-tpa-diseno-en-beta/Componente_Logistica
+          ref: 9db8e3242fd0652f3ec1c4d682415ead8eee27d0
+          path: Componente_Logistica
+      - uses: actions/checkout@v4
+        with:
+          repository: 2026-ddsi-tpa-diseno-en-beta/Incentivos
+          ref: 7925a875d763667752cc9ec28d3a9b685070f447
+          path: Incentivos
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: '**/pom.xml'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compilar servicios y MCP
+        run: |
+          mvn -B -DskipTests -f donaciones/pom.xml package
+          mvn -B -DskipTests -f Donadores-Y-Entidades/pom.xml package
+          mvn -B -DskipTests -f Componente_Logistica/pom.xml package
+          mvn -B -DskipTests -f Incentivos/pom.xml package
+          mvn -B -f testing/mcp-server/pom.xml package
+      - name: Ejecutar seis flujos a través de MCP
+        run: python testing/local/probar_integracion_mcp.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integracion-mcp
+          path: tmp/revision-entrega5/integracion-mcp

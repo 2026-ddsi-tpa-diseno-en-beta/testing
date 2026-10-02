@@ -6,3 +6,4 @@ config.sh
 
 # Salidas de corridas
 *.log
+__pycache__/
