@@ -21,6 +21,8 @@ Se alertan caídas, errores HTTP, rechazos, falta de progreso del matchmaking, o
 
 La implementación está en el repositorio independiente `mcp-server`, ubicado junto a `testing` dentro de TPA. Contiene el servidor MCP, gateway HTTP, catálogo y pruebas unitarias. Las APIs conservan las reglas de negocio; `testing` contiene los escenarios de integración y una copia del contrato en `contratos/tools.json`. `python mcp-server/scripts/generar_catalogo.py` regenera el catálogo y sus copias desde TPA. Para probar los seis flujos por MCP, compilar el nuevo repo y ejecutar `python testing/local/probar_integracion_mcp.py`.
 
+Clonar [mcp-server](https://github.com/2026-ddsi-tpa-diseno-en-beta/mcp-server) junto a este repo. Su CI compila, ejecuta las pruebas unitarias del gateway y verifica stdio. El CI de `testing` descarga versiones fijadas por commit del MCP y las cuatro APIs, compara los catálogos y ejecuta los seis flujos sobre H2. Cuando cambie un componente, actualizar su referencia en `.github/workflows/mcp.yml` para probar el nuevo conjunto de versiones. El checkout entre repositorios usa el acceso público del MCP.
+
 ## Telegram
 
 Configurar `TELEGRAM_BOT_USERNAME`, `TELEGRAM_BOT_TOKEN` y las cuatro variables `DONACIONES_API_URL`, `DONADORES_API_URL`, `LOGISTICA_API_URL`, `INCENTIVOS_API_URL`. Usar `/admin` y `/ayuda logistica` (o el componente deseado). Cada herramienta del catálogo tiene un comando con igual nombre. Ejemplo: `/realizar_donacion {"donadorID":"1","depositoID":"1","productoID":"1","descripcion":"Alimentos","cantidad":10}`. Los comandos existentes con separadores `|` siguen disponibles.
