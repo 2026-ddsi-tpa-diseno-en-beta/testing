@@ -53,7 +53,6 @@ tool('insignias_donador','incentivos','GET','/insignias/donador/{id}','Consultar
 for component in ['donaciones','donadores','logistica','incentivos']:
     tool('salud_'+component,component,'GET','/actuator/health','Consultar disponibilidad del componente '+component)
     tool('metricas_'+component,component,'GET','/actuator/metrics','Consultar nombres de métricas disponibles en '+component)
-# Necesidades GET requires a product query parameter in the current API; add an all-needs endpoint separately.
 for target in ['testing/mcp-server/src/main/resources/tools.json','telegramBot/untitled/src/main/resources/tools.json','testing/contratos/tools.json']:
     p=Path(target); p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(f'{len(catalog)} herramientas y comandos documentados')
