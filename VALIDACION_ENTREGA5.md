@@ -47,6 +47,8 @@ Los seis flujos volvieron a pasar por MCP después de estos cambios, incluyendo 
 
 ## Formato de logs
 
-Consola: texto legible con fecha/hora, nivel, logger y pares clave/valor; operaciones con `traceId`, requestId, componente e instancia en MDC. Better Stack: eventos enviados por el appender Logtail con campos MDC estructurados. No se aplica color ANSI al canal MCP: stdout es JSON-RPC y stderr contiene diagnósticos. Los mensajes no llevan el cuerpo completo de la solicitud.
+Consola: texto legible con hora (`HH:mm:ss.SSS`), nivel, logger y pares clave/valor; operaciones con `traceId`, requestId, componente e instancia en MDC. Better Stack: eventos enviados por el appender Logtail con campos MDC estructurados. No se aplica color ANSI al canal MCP: stdout es JSON-RPC y stderr contiene diagnósticos. Los mensajes no llevan el cuerpo completo de la solicitud.
+
+Mejora de formato pendiente: agregar fecha completa y zona horaria ISO 8601 al patrón de consola para evitar ambigüedad entre días y entre las máquinas del grupo y Render. Los colores no deben formar parte de los datos enviados a la plataforma centralizada.
 
 Los logs de arranque no siempre tienen contexto de petición; se distinguen por APP_NAME. Correlación con traceId no equivale a Datadog APM distribuido. Una demostración debe mostrar la misma operación en varios servicios, incluyendo el worker, y no sólo logs genéricos de arranque.
