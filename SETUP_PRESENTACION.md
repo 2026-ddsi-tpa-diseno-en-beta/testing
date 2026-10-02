@@ -75,7 +75,7 @@ Generar una donación con `X-Trace-Id: ensayo-entrega5-001`, buscar ese ID en Li
 
 El MCP reserva stdout para JSON-RPC y envía diagnósticos a stderr; no se deben agregar logs de consola a su stdout. Bot y MCP tienen diagnósticos locales: sus logs no están integrados automáticamente al appender Spring de las APIs.
 
-Se retiraron del archivo de Donadores credenciales de PostgreSQL y Datadog que estaban fijadas en el código. Cargarlas en el despliegue y rotarlas: quitar un valor del último commit no lo borra del historial Git.
+Se retiraron del archivo de Donadores credenciales de PostgreSQL y Datadog que estaban fijadas en el código, y de Donaciones el fallback no vacío de contraseña PostgreSQL. Cargarlas en el despliegue y rotar las credenciales anteriores: quitar un valor del último commit no lo borra del historial Git.
 
 ## 5. Métricas: Prometheus/Grafana y Datadog
 

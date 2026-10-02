@@ -22,7 +22,7 @@ La implementación Java cubre los seis flujos y separa correctamente servidor MC
 
 - Logística API y worker exportan Prometheus por defecto. Se agregó una prueba usando la configuración de producción, para que un override H2 no esconda otra desactivación accidental.
 - Datadog y OTLP se habilitan explícitamente por entorno. Sin credenciales el servicio puede funcionar y exportar Prometheus.
-- Donadores ya no fija credenciales PostgreSQL/Datadog en el archivo de configuración. Es necesario cargarlas en el despliegue y rotar las anteriores, que permanecen en el historial.
+- Donadores ya no fija credenciales PostgreSQL/Datadog en el archivo de configuración; Donaciones tampoco usa un fallback de contraseña PostgreSQL. Es necesario cargarlas en el despliegue y rotar las anteriores, que permanecen en el historial.
 - Métricas nuevas de necesidades creadas y unidades entregadas: la reserva de stock no cuenta como entrega. La prueba integrada exige dos necesidades y 40 unidades recibidas en su escenario.
 - El worker valida el formato de traceId y restaura el MDC anterior incluso si falla. Los errores se propagan para que RabbitMQ aplique reintentos y DLQ.
 - Dashboard ampliado y alarma por worker con errores. La ocupación se describe explícitamente como total, porque las métricas actuales agregan todos los depósitos.
