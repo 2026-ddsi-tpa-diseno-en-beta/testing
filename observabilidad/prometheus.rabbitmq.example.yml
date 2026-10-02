@@ -1,0 +1,10 @@
+# Optional job to append to scrape_configs, only when the broker provider exposes it.
+# RabbitMQ plugin rabbitmq_prometheus exposes port 15692 by default.
+# Per-object endpoint is needed for queue labels. Prefer a private/authenticated connection.
+scrape_configs:
+  - job_name: rabbitmq
+    metrics_path: /metrics/per-object
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["RABBITMQ_METRICS_HOST:15692"]
+        labels: {component: rabbitmq}

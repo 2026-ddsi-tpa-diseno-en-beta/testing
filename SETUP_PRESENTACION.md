@@ -73,7 +73,7 @@ Aplicar los cambios mediante despliegue. No usar por costumbre el host genérico
 
 Generar una donación con `X-Trace-Id: ensayo-entrega5-001`, buscar ese ID en Live tail y seguirla entre API, RabbitMQ, worker y callback. Verificar que `component` y la instancia identifican al emisor. Los logs de arranque pueden no tener MDC porque aún no hay petición; usar también `APP_NAME`. El UUID `traceId` es correlación propia, no una implementación de Datadog APM/OpenTelemetry tracing.
 
-El MCP reserva stdout para JSON-RPC y envía diagnósticos a stderr; no se deben agregar logs de consola a su stdout. Bot y MCP tienen diagnósticos locales: sus logs no están integrados automáticamente al appender Spring de las APIs.
+El MCP reserva stdout para JSON-RPC y envía diagnósticos a stderr; no se deben agregar logs de consola a su stdout. Bot y MCP tienen un appender Better Stack opcional propio: configurar en sus procesos `BETTERSTACK_SOURCE_TOKEN`, `BETTERSTACK_INGEST_URL` y `APP_NAME`. Los logs incluyen resultados HTTP y correlación, sin cuerpos de los usuarios.
 
 Se retiraron del archivo de Donadores credenciales de PostgreSQL y Datadog que estaban fijadas en el código, y de Donaciones el fallback no vacío de contraseña PostgreSQL. Cargarlas en el despliegue y rotar las credenciales anteriores: quitar un valor del último commit no lo borra del historial Git.
 
@@ -141,7 +141,7 @@ receivers:
 
 Montar el archivo del token dentro del contenedor en esa ruta y montar la configuración adaptada como `/etc/alertmanager/alertmanager.yml`. Validarla con `amtool check-config` antes de reiniciar. Alertmanager no reemplaza automáticamente `${VARIABLE}` en YAML. No versionar el token. También se puede configurar email o webhook según el canal del equipo.
 
-Ensayo: detener una API del entorno de demo, esperar scrape y los dos minutos de la regla, comprobar alerta firing y recepción; volver a iniciarla y verificar resolución. Generar una revocación real para mostrar una alarma de negocio. No modificar permanentemente umbrales para simular que el sistema funciona.
+Ensayo: detener una API del entorno de demo, esperar scrape y los dos minutos de la regla, comprobar alerta firing y recepción; volver a iniciarla y verificar resolución. La alarma de revocaciones requiere tres en diez minutos; una revocación aislada es un evento esperable. También puede demostrarse la ocupación de un depósito superior al 90%. No modificar permanentemente umbrales para simular que el sistema funciona.
 
 ## 7. Claude Desktop
 
@@ -159,7 +159,9 @@ Verificar que Claude muestra las herramientas. Pedir primero salud y listado de 
 
 Configurar `TELEGRAM_BOT_USERNAME` (nombre del bot), `TELEGRAM_BOT_TOKEN` y las cuatro variables `*_API_URL` de la tabla. Compilar dentro de `telegramBot/untitled` y ejecutar `java -jar target/donatrack-telegram.jar`. Usa long polling; mantener una sola instancia usando ese token. Si el mismo bot tenía webhook, retirarlo antes de iniciar long polling. El bot de alertas puede ser otro para evitar confusión.
 
-Usar `/admin` y `/ayuda COMPONENTE`. Cada herramienta tiene un comando del mismo nombre: altas/modificaciones reciben JSON, operaciones sobre un recurso reciben su ID. Los comandos antiguos con `|` siguen vigentes. Las respuestas son JSON técnico, útil para IDs pero mejorable para usuarios finales. `/admin` selecciona un rol de demo: no autentica administradores.
+Usar `/start`, elegir `/donador` o `/admin` y consultar `/menu` o `/ayuda COMPONENTE`. Cada herramienta conserva su comando: altas/modificaciones reciben JSON, operaciones sobre un recurso reciben su ID. Los comandos antiguos con `|` siguen vigentes. Las respuestas son campos legibles con referencias completas y `/pagina N` para listas largas. Opcionalmente `TELEGRAM_ADMIN_CHAT_IDS` limita qué chats pueden seleccionar admin; sin configurar se mantiene el selector de rol de la consigna. No sustituye autenticación de las APIs.
+
+Para las mejoras de métricas, semántica de cantidades, alarmas y configuración adicional de Rabbit/Telegram, seguir [MEJORAS_ENTREGA5.md](MEJORAS_ENTREGA5.md). El receptor activo de Alertmanager debe configurarse externamente; los ejemplos no envían mensajes hasta cargar token y chat ID reales.
 
 ## 9. Datos, red y ensayo completo
 

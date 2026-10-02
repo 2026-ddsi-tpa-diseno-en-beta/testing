@@ -78,7 +78,7 @@
         },
         {
           "series": "donatrack_donaciones_rechazadas_total",
-          "values": "0+1x10"
+          "values": "0+2x10"
         }
       ],
       "alert_rule_test": [
@@ -172,6 +172,111 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "rechazo aislado no dispara alarma",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "donatrack_donaciones_registradas_total",
+          "values": "0x10"
+        },
+        {
+          "series": "donatrack_donaciones_rechazadas_total",
+          "values": "0 1x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "6m",
+          "alertname": "DonacionesRechazadas",
+          "exp_alerts": []
+        }
+      ]
+    },
+    {
+      "name": "depósito individual lleno",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "logistica_depositos_ocupacion{deposito=\"1\"}",
+          "values": "10x10"
+        },
+        {
+          "series": "logistica_depositos_capacidad{deposito=\"1\"}",
+          "values": "10x10"
+        },
+        {
+          "series": "logistica_depositos_ocupacion{deposito=\"2\"}",
+          "values": "0x10"
+        },
+        {
+          "series": "logistica_depositos_capacidad{deposito=\"2\"}",
+          "values": "100x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "6m",
+          "alertname": "DepositosCasiLlenos",
+          "exp_alerts": [
+            {
+              "exp_labels": {
+                "deposito": "1",
+                "severity": "warning"
+              },
+              "exp_annotations": {
+                "summary": "Deposito 1 con ocupacion superior al 90%"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DLQ con mensaje",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "rabbitmq_queue_messages{queue=\"logistica.matchmaking.dlq\"}",
+          "values": "1x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "6m",
+          "alertname": "MensajesEnDLQ",
+          "exp_alerts": [
+            {
+              "exp_labels": {
+                "queue": "logistica.matchmaking.dlq",
+                "severity": "critical"
+              },
+              "exp_annotations": {
+                "summary": "Hay mensajes de Logistica en la cola de errores",
+                "description": "Revisar el fallo antes de reintentar; no purgar la cola. Requiere metricas por cola del broker."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "revocacion aislada no implica comportamiento inusual",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "donatrack_incentivos_misiones_revocadas_total",
+          "values": "0 1x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "6m",
+          "alertname": "MisionesRevocadas",
+          "exp_alerts": []
         }
       ]
     }

@@ -1,5 +1,11 @@
 # Revisión final de entrega 5 — 2 de octubre de 2026
 
+## Actualización de observabilidad y Telegram
+
+Las mejoras posteriores están documentadas en [MEJORAS_ENTREGA5.md](MEJORAS_ENTREGA5.md), con su relación con las consignas 1–5. Se implementaron formato legible y paginación de Telegram conservando selección inicial/comandos, cobertura física y reservas separadas, ocupación por depósito, histogramas HTTP/integración, tiempos de entrega y procesamiento, seguimiento del cron y logs estructurados. Las observaciones originales de este informe sobre JSON técnico, falta de p95, fecha incompleta y ausencia de appender en bot/MCP deben leerse con esa actualización.
+
+Las cuentas externas siguen pendientes de ensayo real. El CI de Donaciones/Donadores ejecuta pruebas y reporte, el de Incentivos ejecuta package y el de Logística ejecuta verify. Una ejecución adicional de verify detectó cobertura inferior al umbral configurado de 80% en los tres primeros repos; no se redujo ni se deshabilitó ese umbral. Se reporta aparte de los resultados funcionales y del CI.
+
 ## Conclusión
 
 La implementación Java cubre los seis flujos y separa correctamente servidor MCP, APIs, bot y pruebas. El ensayo automatizado usa APIs reales con persistencia H2 aislada; no acredita las cuentas externas ni la migración de PostgreSQL existente. Para cerrar la entrega hay que completar el ensayo de infraestructura indicado en [SETUP_PRESENTACION.md](SETUP_PRESENTACION.md).

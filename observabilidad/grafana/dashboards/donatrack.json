@@ -2,7 +2,7 @@
   "uid": "donatrack",
   "title": "DonaTrack — entrega 5",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "15s",
   "time": {
     "from": "now-1h",
@@ -77,7 +77,7 @@
     },
     {
       "id": 4,
-      "title": "Donaciones registradas",
+      "title": "Donaciones registradas · última hora",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -92,14 +92,14 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "donatrack_donaciones_registradas_total",
+          "expr": "increase(donatrack_donaciones_registradas_total[1h])",
           "legendFormat": "{{component}}"
         }
       ]
     },
     {
       "id": 5,
-      "title": "Quejas",
+      "title": "Quejas · última hora",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -114,7 +114,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "donatrack_donaciones_quejas_registradas_total",
+          "expr": "increase(donatrack_donaciones_quejas_registradas_total[1h])",
           "legendFormat": "{{component}}"
         }
       ]
@@ -167,11 +167,12 @@
           "unit": "percentunit"
         },
         "overrides": []
-      }
+      },
+      "description": "Ocupación global; ver también el panel por depósito para detectar uno lleno."
     },
     {
       "id": 8,
-      "title": "Misiones revocadas",
+      "title": "Misiones revocadas · última hora",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -186,14 +187,14 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "donatrack_incentivos_misiones_revocadas_total",
+          "expr": "increase(donatrack_incentivos_misiones_revocadas_total[1h])",
           "legendFormat": "{{component}}"
         }
       ]
     },
     {
       "id": 9,
-      "title": "Necesidades creadas",
+      "title": "Necesidades creadas · última hora",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -208,14 +209,14 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "donadores_necesidades_registradas_total",
+          "expr": "increase(donadores_necesidades_registradas_total[1h])",
           "legendFormat": "{{component}}"
         }
       ]
     },
     {
       "id": 10,
-      "title": "Unidades entregadas a entidades",
+      "title": "Unidades entregadas a entidades · última hora",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -230,14 +231,14 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "donadores_necesidades_unidades_entregadas_total",
+          "expr": "increase(donadores_necesidades_unidades_entregadas_total[1h])",
           "legendFormat": "{{component}}"
         }
       ]
     },
     {
       "id": 11,
-      "title": "Donadores baneados",
+      "title": "Donadores baneados · última hora",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -252,14 +253,14 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "donadores_baneados_total",
+          "expr": "increase(donadores_baneados_total[1h])",
           "legendFormat": "{{component}}"
         }
       ]
     },
     {
       "id": 12,
-      "title": "Entregas reportadas",
+      "title": "Entregas reportadas · última hora",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -274,7 +275,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "logistica_entregas_reportadas_total",
+          "expr": "increase(logistica_entregas_reportadas_total[1h])",
           "legendFormat": "{{component}}"
         }
       ]
@@ -325,7 +326,7 @@
     },
     {
       "id": 15,
-      "title": "Donadores procesados por incentivos",
+      "title": "Donadores procesados por incentivos · última hora",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -340,7 +341,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "donatrack_incentivos_donadores_procesados_total",
+          "expr": "increase(donatrack_incentivos_donadores_procesados_total[1h])",
           "legendFormat": "{{component}}"
         }
       ]
@@ -366,6 +367,528 @@
           "legendFormat": "{{component}}"
         }
       ]
+    },
+    {
+      "id": 17,
+      "title": "Ocupación por depósito (%)",
+      "description": "Permite detectar un depósito lleno aunque la ocupación global sea baja.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 64
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * logistica_depositos_ocupacion / clamp_min(logistica_depositos_capacidad, 1)",
+          "legendFormat": "{{deposito}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 18,
+      "title": "Unidades requeridas por tipo",
+      "description": "Objetivo del período vigente para recurrentes; extraordinarias conservan su objetivo.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 64
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donadores_necesidades_unidades_objetivo",
+          "legendFormat": "{{tipo}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 19,
+      "title": "Unidades cubiertas por entrega física",
+      "description": "Cobertura persistida, limitada por el objetivo del dominio. Las reservas no cuentan como entrega.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 72
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donadores_necesidades_unidades_cubiertas",
+          "legendFormat": "{{tipo}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 20,
+      "title": "Unidades faltantes por entrega física",
+      "description": "Todavía faltan recibir físicamente; algunas pueden estar reservadas en Logística.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 72
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donadores_necesidades_unidades_faltantes",
+          "legendFormat": "{{tipo}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 21,
+      "title": "Unidades reservadas para entrega",
+      "description": "Asignaciones pendientes; no son stock libre ni entrega realizada.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 80
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "logistica_asignaciones_unidades_reservadas",
+          "legendFormat": "{{component}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 22,
+      "title": "Asignación sin entregar más antigua",
+      "description": "Tiempo desde la asignación, no desde el ingreso a Rabbit.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 80
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "logistica_asignaciones_pendientes_antiguedad_seconds",
+          "legendFormat": "{{component}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 23,
+      "title": "Donación INGRESADA más antigua",
+      "description": "Puede estar en stock, asignada o pendiente; no es la antigüedad de la cola.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 88
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donatrack_donaciones_ingresadas_antiguedad_seconds",
+          "legendFormat": "{{component}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 24,
+      "title": "HTTP p95 por componente",
+      "description": "Necesita tráfico y buckets. Una media baja puede ocultar solicitudes lentas.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 88
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (component, le) (rate(http_server_requests_seconds_bucket[5m])))",
+          "legendFormat": "{{component}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 25,
+      "title": "Integraciones HTTP p95 por destino",
+      "description": "Mide respuesta HTTP; no mide el proceso asincrónico completo.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 96
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (component, destino, le) (rate(donatrack_integraciones_duracion_seconds_bucket[5m])))",
+          "legendFormat": "{{component}} → {{destino}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 26,
+      "title": "Intentos de worker · última hora",
+      "description": "Incluye reintentos. Comparar con mensajes terminados y errores.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 96
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (worker_id) (increase(logistica_worker_intentos_total[1h]))",
+          "legendFormat": "{{worker_id}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 27,
+      "title": "Resultados del worker · última hora",
+      "description": "Sin necesidades y sin elegibles son resultados válidos; no se confunden con errores HTTP.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 104
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (worker_id, resultado) (increase(logistica_worker_resultados_total[1h]))",
+          "legendFormat": "{{worker_id}} · {{resultado}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 28,
+      "title": "Worker p95 de procesamiento",
+      "description": "Duración de cada intento, incluido un intento fallido.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 104
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (worker_id, le) (rate(logistica_worker_duracion_seconds_bucket[5m])))",
+          "legendFormat": "{{worker_id}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 29,
+      "title": "Segundos desde cron exitoso",
+      "description": "Si el timestamp es 0, todavía no hubo un ciclo exitoso desde el arranque.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 112
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "time() - donatrack_incentivos_cron_ultima_ejecucion_exitosa_seconds",
+          "legendFormat": "{{component}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 30,
+      "title": "Pendientes del último ciclo de incentivos",
+      "description": "Trabajo restante o fallido del último ciclo; no es una cola persistida.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 112
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donatrack_incentivos_cron_pendientes",
+          "legendFormat": "{{component}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 31,
+      "title": "Tiempo medio asignación → entrega",
+      "description": "Por paquete entregado. No incluye paquetes todavía pendientes; leer junto a antigüedad.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 120
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(logistica_entregas_duracion_seconds_sum[1h])) / clamp_min(sum(rate(logistica_entregas_duracion_seconds_count[1h])), 0.000001)",
+          "legendFormat": "entrega"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 32,
+      "title": "Rabbit mensajes listos y sin confirmar",
+      "description": "Requiere habilitar métricas por cola en el broker; sin datos no significa cero.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 120
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rabbitmq_queue_messages{queue=\"logistica.matchmaking\"}",
+          "legendFormat": "cola"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 33,
+      "title": "Rabbit mensajes en DLQ",
+      "description": "Requiere exporter del broker. Revisar el fallo antes de reintentar.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 128
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rabbitmq_queue_messages{queue=\"logistica.matchmaking.dlq\"}",
+          "legendFormat": "DLQ"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 34,
+      "title": "Rabbit consumidores",
+      "description": "Verificar dos workers activos en la demo; depende del exporter del proveedor.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 128
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rabbitmq_queue_consumers{queue=\"logistica.matchmaking\"}",
+          "legendFormat": "consumidores"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
     }
   ]
 }

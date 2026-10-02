@@ -11,8 +11,10 @@ jobs:
         run: |
           docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 check config prometheus.yml
           docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 check config prometheus.render.example.yml
+          docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 check config prometheus.rabbitmq.example.yml
           docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 test rules alertas.test.yml
           docker run --rm --entrypoint /bin/amtool -v "$PWD/observabilidad:/etc/alertmanager:ro" prom/alertmanager:v0.28.1 check-config /etc/alertmanager/alertmanager.yml
+          docker run --rm --entrypoint /bin/amtool -v "$PWD/observabilidad:/etc/alertmanager:ro" prom/alertmanager:v0.28.1 check-config /etc/alertmanager/alertmanager.telegram.example.yml
   integracion-mcp:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -23,28 +25,28 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/mcp-server
-          ref: 3da3dcd50d48eb777ab57a022c3d68bd3661bc5b
+          ref: 82488d9867753f0833af2d840d8342be45331b0b
           path: mcp-server
       # Reproducible set of the four service versions verified for entrega 5.
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/donaciones
-          ref: 378998c9d3e7f8f3a208ab2ae445c09d9ab259ce
+          ref: bfbcc50f7d5bbeaac0792db8446e6f32bed62ccd
           path: donaciones
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Donadores-Y-Entidades
-          ref: 4cee91ee9619291fce62b34a63c1a07f2b990595
+          ref: 5d1fca8ad9c5b362ea60c5fbe5d0f8c48df5f4c4
           path: Donadores-Y-Entidades
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Componente_Logistica
-          ref: 3f2cc52ab41e7b2fa831b4bad28da18087971a6d
+          ref: 29d49ff3c2842a47fe5da53282e15231abe505b7
           path: Componente_Logistica
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Incentivos
-          ref: 87bf1c2254b45e6b7d02dd5f0d4b4a2e8c50b20a
+          ref: f585a5f283e791fd9f5a4258cd976947b7ca3952
           path: Incentivos
       - uses: actions/setup-java@v4
         with:

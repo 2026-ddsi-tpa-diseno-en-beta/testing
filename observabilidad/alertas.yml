@@ -9,13 +9,13 @@ groups:
           summary: "No responde {{ $labels.component }}"
           description: "Revisar salud y logs del componente antes de iniciar la demo."
       - alert: FallosDeIntegracion
-        expr: sum by (component) (rate(http_server_requests_seconds_count{status=~"5.."}[5m])) > 0.05
+        expr: (sum by (component) (rate(http_server_requests_seconds_count{status=~"5.."}[5m])) / clamp_min(sum by (component) (rate(http_server_requests_seconds_count[5m])), 0.001) > 0.05) and on (component) sum by (component) (increase(http_server_requests_seconds_count[5m])) >= 5
         for: 2m
         labels: {severity: critical}
         annotations:
           summary: "Errores HTTP en {{ $labels.component }}"
       - alert: DonacionesRechazadas
-        expr: sum(rate(donatrack_donaciones_rechazadas_total[5m])) / clamp_min(sum(rate(donatrack_donaciones_registradas_total[5m]) + rate(donatrack_donaciones_rechazadas_total[5m])), 0.001) > 0.3
+        expr: (sum(rate(donatrack_donaciones_rechazadas_total[5m])) / clamp_min(sum(rate(donatrack_donaciones_registradas_total[5m]) + rate(donatrack_donaciones_rechazadas_total[5m])), 0.001) > 0.3) and on () sum(increase(donatrack_donaciones_registradas_total[5m]) + increase(donatrack_donaciones_rechazadas_total[5m])) >= 5
         for: 2m
         labels: {severity: warning}
         annotations:
@@ -29,16 +29,16 @@ groups:
           summary: "Hay paquetes pendientes sin progreso del matchmaking"
           description: "Revisar workers, conexion al broker y DLQ."
       - alert: DepositosCasiLlenos
-        expr: logistica_deposito_ocupacion / clamp_min(logistica_deposito_capacidad, 1) > 0.9
+        expr: logistica_depositos_ocupacion / clamp_min(logistica_depositos_capacidad, 1) > 0.9
         for: 1m
         labels: {severity: warning}
         annotations:
-          summary: "Ocupacion total de los depositos superior al 90%"
+          summary: "Deposito {{ $labels.deposito }} con ocupacion superior al 90%"
       - alert: MisionesRevocadas
-        expr: increase(donatrack_incentivos_misiones_revocadas_total[10m]) > 0
+        expr: increase(donatrack_incentivos_misiones_revocadas_total[10m]) >= 3
         labels: {severity: warning}
         annotations:
-          summary: "Un donador perdio una mision de donaciones exitosas"
+          summary: "Tres o mas revocaciones de misiones en diez minutos"
           description: "Correlacionar con quejas recientes en los logs."
       - alert: CronIncentivosConErrores
         expr: increase(donatrack_incentivos_cron_errores_total[5m]) > 0
@@ -51,3 +51,24 @@ groups:
         annotations:
           summary: "Errores de matchmaking en {{ $labels.worker_id }}"
           description: "Revisar reintentos, callback HTTP y DLQ del broker."
+      - alert: EntregasDemoradas
+        expr: logistica_asignaciones_pendientes_antiguedad_seconds > 86400
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Hay asignaciones sin entregar hace mas de 24 horas"
+          description: "Revisar paquetes asignados y coordinar la entrega; reserva no significa entrega."
+      - alert: CronSinEjecucionExitosa
+        expr: (time() - donatrack_incentivos_cron_ultima_ejecucion_exitosa_seconds > 300) and on (job, instance) (time() - process_start_time_seconds > 300)
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: "Incentivos no completa un ciclo exitoso hace mas de cinco minutos"
+          description: "Umbral pensado para intervalo de 60 segundos; ajustarlo si cambia el cron."
+      - alert: MensajesEnDLQ
+        expr: rabbitmq_queue_messages{queue="logistica.matchmaking.dlq"} > 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "Hay mensajes de Logistica en la cola de errores"
+          description: "Revisar el fallo antes de reintentar; no purgar la cola. Requiere metricas por cola del broker."

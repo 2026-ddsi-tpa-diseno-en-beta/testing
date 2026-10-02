@@ -7,3 +7,5 @@ config.sh
 # Salidas de corridas
 *.log
 __pycache__/
+observabilidad/*.local.yml
+observabilidad/*.local

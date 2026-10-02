@@ -85,7 +85,17 @@ def run_flows():
     assert len(request('donadores','GET','/necesidades'))==2
     for _,component,_ in SERVICES:
         metrics=request(component,'GET','/actuator/prometheus')
+        # A second scrape observes per-depot series registered from the initial snapshot.
+        metrics=request(component,'GET','/actuator/prometheus')
+        (OUTPUT/f'{component}-prometheus.txt').write_text(metrics,encoding='utf-8')
         assert 'http_server_requests_seconds' in metrics,(component,metrics[:200])
+        required = {
+            'donaciones': ['donatrack_donaciones_ingresadas_antiguedad_seconds', 'donatrack_donaciones_ingreso_aceptacion_seconds_count'],
+            'donadores': ['donadores_necesidades_unidades_faltantes', 'donadores_necesidades_unidades_cubiertas'],
+            'logistica': ['logistica_depositos_ocupacion', 'logistica_asignaciones_unidades_reservadas', 'logistica_entregas_duracion_seconds_count'],
+            'incentivos': ['donatrack_incentivos_cron_ultima_ejecucion_exitosa_seconds', 'donatrack_incentivos_cron_pendientes'],
+        }
+        for meter in required[component]: assert meter in metrics, (component, meter)
         if component == 'donadores':
             for meter, expected in [('donadores_necesidades_registradas_total', 2),
                                     ('donadores_necesidades_unidades_entregadas_total', 40)]:

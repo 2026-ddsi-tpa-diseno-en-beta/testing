@@ -1,0 +1,7 @@
+# Overlay; keep secrets and the active override file outside Git.
+# docker compose -f compose.yaml -f compose.telegram.example.yaml up -d
+services:
+  alertmanager:
+    volumes:
+      - ./alertmanager.telegram.local.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./telegram-bot-token.local:/run/secrets/telegram_bot_token:ro
