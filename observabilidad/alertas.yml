@@ -33,7 +33,7 @@ groups:
         for: 1m
         labels: {severity: warning}
         annotations:
-          summary: "Ocupacion de los depositos superior al 90%"
+          summary: "Ocupacion total de los depositos superior al 90%"
       - alert: MisionesRevocadas
         expr: increase(donatrack_incentivos_misiones_revocadas_total[10m]) > 0
         labels: {severity: warning}
@@ -45,3 +45,9 @@ groups:
         labels: {severity: warning}
         annotations:
           summary: "El cron no pudo procesar uno o mas donadores"
+      - alert: WorkerConErrores
+        expr: sum by (component, worker_id) (increase(logistica_worker_errores_total{component="worker"}[5m])) > 0
+        labels: {severity: warning}
+        annotations:
+          summary: "Errores de matchmaking en {{ $labels.worker_id }}"
+          description: "Revisar reintentos, callback HTTP y DLQ del broker."

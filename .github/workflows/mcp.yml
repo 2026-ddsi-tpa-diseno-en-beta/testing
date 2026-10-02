@@ -10,6 +10,7 @@ jobs:
       - name: Validar reglas y escenarios de alertas
         run: |
           docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 check config prometheus.yml
+          docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 check config prometheus.render.example.yml
           docker run --rm --entrypoint /bin/promtool -v "$PWD/observabilidad:/etc/prometheus:ro" -w /etc/prometheus prom/prometheus:v3.5.0 test rules alertas.test.yml
           docker run --rm --entrypoint /bin/amtool -v "$PWD/observabilidad:/etc/alertmanager:ro" prom/alertmanager:v0.28.1 check-config /etc/alertmanager/alertmanager.yml
   integracion-mcp:
@@ -28,22 +29,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/donaciones
-          ref: e914b6a6602f048648f3e2108b5d0be68e17e106
+          ref: 84c4172aac5a825efa33d79fc4d602fdf7a5061c
           path: donaciones
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Donadores-Y-Entidades
-          ref: 299003ef9cb94dec2570400ce2c32a8cdc6b15c9
+          ref: 4cee91ee9619291fce62b34a63c1a07f2b990595
           path: Donadores-Y-Entidades
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Componente_Logistica
-          ref: 9db8e3242fd0652f3ec1c4d682415ead8eee27d0
+          ref: 3f2cc52ab41e7b2fa831b4bad28da18087971a6d
           path: Componente_Logistica
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Incentivos
-          ref: 7925a875d763667752cc9ec28d3a9b685070f447
+          ref: 87bf1c2254b45e6b7d02dd5f0d4b4a2e8c50b20a
           path: Incentivos
       - uses: actions/setup-java@v4
         with:

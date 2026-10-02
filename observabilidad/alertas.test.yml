@@ -145,6 +145,35 @@
           "exp_alerts": []
         }
       ]
+    },
+    {
+      "name": "error del worker identifica la instancia",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "logistica_worker_errores_total{component=\"worker\",worker_id=\"worker-2\"}",
+          "values": "0+1x10"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "3m",
+          "alertname": "WorkerConErrores",
+          "exp_alerts": [
+            {
+              "exp_labels": {
+                "component": "worker",
+                "worker_id": "worker-2",
+                "severity": "warning"
+              },
+              "exp_annotations": {
+                "summary": "Errores de matchmaking en worker-2",
+                "description": "Revisar reintentos, callback HTTP y DLQ del broker."
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

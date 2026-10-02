@@ -5,7 +5,7 @@ RabbitMQ is disabled in these configs; callbacks simulate the worker's HTTP cont
 This verifies REST/domain integration, not delivery through the real message broker.
 """
 from pathlib import Path
-import json, os, subprocess, time, urllib.request, urllib.error
+import json, os, re, subprocess, time, urllib.request, urllib.error
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / 'tmp/revision-entrega5/integracion-local'
@@ -86,6 +86,11 @@ def run_flows():
     for _,component,_ in SERVICES:
         metrics=request(component,'GET','/actuator/prometheus')
         assert 'http_server_requests_seconds' in metrics,(component,metrics[:200])
+        if component == 'donadores':
+            for meter, expected in [('donadores_necesidades_registradas_total', 2),
+                                    ('donadores_necesidades_unidades_entregadas_total', 40)]:
+                found = re.search(r'^' + meter + r'(?:\{[^}]*\})? ([0-9.eE+-]+)', metrics, re.MULTILINE)
+                assert found and float(found.group(1)) == expected, (meter, expected)
         spec=request(component,'GET','/v3/api-docs')
         assert spec.get('paths'),component
         (OUTPUT/f'{component}-openapi.json').write_text(json.dumps(spec,indent=2,ensure_ascii=False),encoding='utf-8')

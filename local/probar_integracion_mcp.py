@@ -9,6 +9,7 @@ import queue
 import re
 import subprocess
 import threading
+import sys
 import probar_integracion as suite
 
 
@@ -114,6 +115,10 @@ def main():
             listed = client.call('tools/list', {})['tools']
             assert {tool['name'] for tool in listed} == {tool['name'] for tool in catalog}
             result = original_flows()
+            command = [sys.executable, str(suite.ROOT / 'testing/local/verificar_externos.py')]
+            for _, component, port in suite.SERVICES:
+                command += ['--' + component, f'http://127.0.0.1:{port}']
+            subprocess.run(command, check=True)
             required = {'realizar_donacion', 'reportar_entrega', 'registrar_queja',
                         'procesar_donador', 'crear_necesidad', 'estadisticas_donador'}
             assert required <= used, required - used

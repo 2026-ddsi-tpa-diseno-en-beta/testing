@@ -143,7 +143,7 @@
     },
     {
       "id": 7,
-      "title": "Ocupación de depósitos",
+      "title": "Ocupación total de depósitos",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -161,7 +161,13 @@
           "expr": "logistica_deposito_ocupacion / clamp_min(logistica_deposito_capacidad,1)",
           "legendFormat": "{{component}}"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      }
     },
     {
       "id": 8,
@@ -181,6 +187,182 @@
         {
           "refId": "A",
           "expr": "donatrack_incentivos_misiones_revocadas_total",
+          "legendFormat": "{{component}}"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Necesidades creadas",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donadores_necesidades_registradas_total",
+          "legendFormat": "{{component}}"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Unidades entregadas a entidades",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donadores_necesidades_unidades_entregadas_total",
+          "legendFormat": "{{component}}"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Donadores baneados",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donadores_baneados_total",
+          "legendFormat": "{{component}}"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Entregas reportadas",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "logistica_entregas_reportadas_total",
+          "legendFormat": "{{component}}"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Callbacks exitosos por worker",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "logistica_worker_callbacks_exitosos_total{component=\"worker\"}",
+          "legendFormat": "{{worker_id}}"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Errores por worker",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "logistica_worker_errores_total{component=\"worker\"}",
+          "legendFormat": "{{worker_id}}"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "Donadores procesados por incentivos",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "donatrack_incentivos_donadores_procesados_total",
+          "legendFormat": "{{component}}"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Duración media HTTP (segundos)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "donatrack"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (component) (rate(http_server_requests_seconds_sum[5m])) / clamp_min(sum by (component) (rate(http_server_requests_seconds_count[5m])), 0.001)",
           "legendFormat": "{{component}}"
         }
       ]

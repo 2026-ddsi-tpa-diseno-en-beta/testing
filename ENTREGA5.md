@@ -15,7 +15,7 @@ Cada servicio devuelve y propaga `X-Trace-Id`. Los logs incluyen componente, ins
 
 En `observabilidad`: `docker compose up -d`. Prometheus queda en localhost:9090, Grafana en localhost:3000 y Alertmanager en localhost:9093. Las APIs se esperan en los puertos 8081–8084. Para Render cambiar los targets de prometheus.yml por los hosts reales y configurar HTTPS.
 
-Se alertan caídas, errores HTTP, rechazos, falta de progreso del matchmaking, ocupación, revocación y errores del cron. Las siete reglas pasaron `promtool check rules`; cuatro escenarios pasaron `promtool test rules observabilidad/alertas.test.yml`: caída, falta de callbacks, primeras donaciones rechazadas y flujo normal sin falsas alarmas. El CI valida las reglas y la configuración. Alertmanager muestra alertas; su receptor debe configurarse para notificar por un canal real. Los contenedores del stack completo no se ejecutaron localmente en esta revisión.
+Se alertan caídas, errores HTTP, rechazos, falta de progreso del matchmaking, ocupación global, revocación, errores del cron y del worker. Las ocho reglas tienen cinco escenarios aprobados con `promtool test rules observabilidad/alertas.test.yml`. El dashboard contiene 16 paneles. El CI valida reglas y configuración local/remota. Alertmanager muestra alertas; su receptor debe configurarse para notificar por un canal real. Los contenedores del stack completo no se ejecutaron localmente en esta revisión.
 
 ## MCP
 
@@ -30,5 +30,7 @@ Configurar `TELEGRAM_BOT_USERNAME`, `TELEGRAM_BOT_TOKEN` y las cuatro variables 
 La selección `/admin` es un rol para la demo, no autenticación. La verificación local del bot usa servidores HTTP de prueba; falta probar mensajes con el token real.
 
 ## Para cerrar la entrega
+
+La revisión de cumplimiento y mejoras está en [VALIDACION_ENTREGA5.md](VALIDACION_ENTREGA5.md). El setup completo de cuentas, variables, broker, clientes y notificaciones está en [SETUP_PRESENTACION.md](SETUP_PRESENTACION.md).
 
 Revisar los diagramas y el informe en Modelo_Arquitectura/entrega5; desplegar las versiones nuevas coordinadamente; verificar migraciones de la base existente, dos workers con RabbitMQ, logs recibidos y una alerta real; conectar Claude Desktop y Telegram. El procesamiento usa llamadas HTTP entre servicios, sin transacción distribuida: una caída a mitad de una entrega puede requerir conciliación. No afirmar validación en producción a partir de las pruebas H2.
