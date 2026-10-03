@@ -1,0 +1,40 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+rule_files: ["/etc/prometheus/alertas.yml"]
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+scrape_configs:
+  - job_name: donaciones
+    scheme: https
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["donaciones-xouj.onrender.com:443"]
+        labels: {component: donaciones}
+  - job_name: donadores
+    scheme: https
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["entrega-2-lolasimone.onrender.com:443"]
+        labels: {component: donadores}
+  - job_name: logistica
+    scheme: https
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["donatrack-api-logistica-diseno-en-beta.onrender.com:443"]
+        labels: {component: logistica}
+  - job_name: incentivos
+    scheme: https
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["entrega-2-melinazingales.onrender.com:443"]
+        labels: {component: incentivos}
+  - job_name: workers
+    scheme: https
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["donatrack-logistica-worker-1.onrender.com:443", "donatrack-logistica-worker-2.onrender.com:443"]
+        labels: {component: worker}

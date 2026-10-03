@@ -1,0 +1,37 @@
+Necesito preparar ESTA computadora para presentar DonaTrack, entrega 5 DDS UTN, usando los servicios ya desplegados. Ejecutá la preparación y las verificaciones; no te quedes en un plan. Tenemos poco tiempo. Primero detectá el sistema operativo y los programas ya instalados. Preferí Windows si corresponde, pero adaptá rutas y comandos al sistema real.
+
+1. Instalá lo que falte mediante fuentes oficiales: Git (con Git Bash en Windows), JDK 21, Maven, Python 3, Claude Desktop y Postman. Para métricas/alertas usamos Prometheus, Grafana y Alertmanager mediante Docker Desktop; comprobá si Docker está operativo antes de instalarlo. Si requiere habilitar virtualización/WSL, privilegios o reiniciar, explicá esa limitación y seguí preparando todo lo demás. No reinicies la computadora automáticamente. No hace falta Node para nuestro MCP Java ni instalar PostgreSQL/RabbitMQ locales si usamos los despliegues actuales. No necesito Datadog ni Grafana Cloud para esta demo.
+
+2. Creá una carpeta TPA adecuada y cloná por HTTPS, sin reemplazar carpetas existentes, estos repositorios de https://github.com/2026-ddsi-tpa-diseno-en-beta/:
+donaciones
+Donadores-Y-Entidades
+Componente_Logistica
+Incentivos
+telegramBot
+mcp-server
+testing
+Modelo_Arquitectura
+Modelo_Dominio
+Si existen, inspeccioná cambios y actualizá sólo cuando sea seguro con fetch y pull --ff-only. Nunca hagas reset --hard, purgas, force-push ni limpieza de recursos remotos.
+
+3. Leé AGENTS.md aplicables y las guías de testing y mcp-server. Si están disponibles, empezá por testing/DEFENSA_Y_DEMO_ENTREGA5.txt y testing/observabilidad/prometheus.presentacion.example.yml. Compilá y verificá el MCP Java 21 con mvn package. Conservá cualquier configuración existente de Claude, hacé un backup y agregá sólo la entrada mcpServers.donatrack usando rutas ABSOLUTAS al java.exe y target/donatrack-mcp.jar. Usá scripts/crear_config_claude.py para generar esa entrada; sus valores por defecto son localhost y deben reemplazarse por las URLs reales siguientes:
+DONACIONES_API_URL=https://donaciones-xouj.onrender.com
+DONADORES_API_URL=https://entrega-2-lolasimone.onrender.com
+LOGISTICA_API_URL=https://donatrack-api-logistica-diseno-en-beta.onrender.com
+INCENTIVOS_API_URL=https://entrega-2-melinazingales.onrender.com
+Reiniciá Claude Desktop cuando yo cierre mis conversaciones y verificá que muestra las herramientas y puede consultar salud y productos. La sesión de Claude requiere que yo me autentique; no confundas una prueba stdio con una conversación comprobada en Claude.
+
+4. Consultá /actuator/health y /actuator/prometheus de esas cuatro APIs y de:
+https://donatrack-logistica-worker-1.onrender.com
+https://donatrack-logistica-worker-2.onrender.com
+Esperá el arranque en frío de Render y repetí lecturas si hay timeout; nunca repitas automáticamente un POST que pudo haberse ejecutado. Verificá en OpenAPI de Logística POST /entregas/lote, GET /asignaciones y PUT /depositos/{id}. Si faltan, avisame: las lecturas del 3/10 siguieron detectando esas rutas ausentes y HTTP 500 en Prometheus de Logística. No inventes que está resuelto. Donadores ya exportó sus nuevas métricas de necesidades el 3/10.
+
+5. Si Docker funciona, en testing/observabilidad copiá prometheus.presentacion.example.yml sobre prometheus.local.yml y creá un overlay local de Compose que monte ese archivo en /etc/prometheus/prometheus.yml (conservando reglas y destino Alertmanager). Iniciá docker compose -f compose.yaml -f compose.presentacion.local.yml up -d. Si el archivo de ejemplo no está publicado, generá el scrape de las seis URLs anteriores, scheme https, puerto 443, metrics_path /actuator/prometheus, scrape/evaluation 15 segundos, reglas /etc/prometheus/alertas.yml y Alertmanager alertmanager:9093. Verificá http://localhost:9090/targets, /rules y /alerts; http://localhost:3000 (Grafana, admin/admin inicial); http://localhost:9093 (Alertmanager). Prometheus debe obtener datos reales, no los targets localhost por defecto del repo. No ocultes targets fallidos ni modifiques umbrales de negocio para fingir éxito.
+
+6. Prepará Postman con variables para las cuatro URLs y los IDs propios de la demostración. Importá la colección disponible en el repo si existe; antes de ejecutar requests revisá su contrato contra OpenAPI y no corras toda una colección a ciegas. Mostrame cómo hacer manualmente una necesidad extraordinaria, una donación, esperar el paquete/asignación, reportar entrega por ID DE PAQUETE, registrar queja y consultar estadísticas. Usá nombres DEMO_<fecha> y recursos propios. No borres bases ni purgues colas. Usá un producto sin necesidades previas si queremos demostrar stock sin asignación. No pruebes entregas recurrentes parciales como si fueran extraordinarias.
+
+7. Telegram: primero averiguá si un compañero ya tiene una instancia del bot corriendo. No inicies un segundo poller del mismo token. Para correrlo acá, compilá telegramBot, leé la configuración real y pedime token/nombre sólo si faltan; configurá las cuatro *_API_URL anteriores. Las credenciales deben quedar en configuración local excluida de Git, nunca en código ni en este prompt. Las alertas de Alertmanager son una configuración separada del bot funcional: el receptor por defecto del repo no manda mensajes. Si queremos notificación, usá los ejemplos telegram de observabilidad y pedime el chat_id de destino autorizado y el token. No mandes mensajes a destinatarios no indicados por mí.
+
+8. Al finalizar dejame un estado breve: programas listos, repos/rama/SHA, comprobaciones reales, URLs de paneles, comandos para mantener APIs despiertas y pasos manuales de demo. Separá: implementado y probado; configuración externa faltante; integración aún no verificada. No hagas cambios de negocio ni despliegues ajenos sin una necesidad concreta. Quiero entender el flujo y poder defenderlo, no sólo ejecutar un script.
+
+Contexto: MCP es un módulo Java local iniciado por Claude, que invoca APIs REST y no duplica reglas. RabbitMQ distribuye trabajo entre dos workers; reservar un paquete no significa entregarlo. Better Stack centraliza logs; Prometheus recolecta métricas, Grafana las visualiza y Alertmanager agrupa/notifica alertas. Donaciones tiene configuradas variables Better Stack en Render y fue redeployado; la recepción en Live Tail debe confirmarse con la cuenta del grupo. No tengo en este prompt contraseñas ni tokens.

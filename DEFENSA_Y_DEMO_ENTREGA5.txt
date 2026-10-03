@@ -1,0 +1,185 @@
+DonaTrack — defensa y demostración de entrega 5
+Preparado el 3/10/2026. Los resultados del ensayo anterior no garantizan el estado actual de Render.
+
+1. QUÉ PIDE LA ENTREGA Y QUÉ HICIMOS
+
+El sistema ya registraba donadores, entidades, necesidades, productos, donaciones y entregas. La entrega 5 pide integrarlo de punta a punta y poder operarlo desde Claude Desktop y Telegram, además de observar qué ocurre mediante logs centralizados, métricas de negocio y alertas. También pide documentación y diagramas: este material ayuda a defender el código, no reemplaza el PDF exigido.
+
+Los seis recorridos pedidos son: realizar donación, reportar entrega, registrar queja, procesar donador/incentivos, registrar nueva necesidad y consultar estadísticas del donador. Deben funcionar juntos, respetando las reglas de entregas anteriores.
+
+Cada componente tiene una responsabilidad:
+- Donadores y Entidades: personas, organizaciones receptoras, necesidades, estado/categoría del donador y estadísticas.
+- Donaciones: catálogo de categorías/productos, donaciones y quejas.
+- Logística: depósitos, paquetes, stock, asignaciones y reporte de entrega.
+- Incentivos: misiones, insignias y procesamiento periódico/manual de donadores.
+- RabbitMQ y dos workers: trabajo de matchmaking fuera del request inicial; el worker devuelve el resultado a la API de Logística.
+- MCP Java: puente local entre Claude y las cuatro APIs REST. Claude inicia el JAR por stdio; MCP traduce herramientas a HTTP. No contiene otra implementación de las reglas.
+- Telegram Java: otro cliente de las mismas APIs, con roles, comandos y respuestas legibles. Elegir /donador o /admin no sustituye un sistema completo de autenticación del backend.
+- Better Stack: reúne logs emitidos por los procesos.
+- Prometheus: consulta periódicamente /actuator/prometheus y guarda valores numéricos.
+- Grafana: muestra esos valores en un tablero.
+- Alertmanager: agrupa y distribuye las alertas evaluadas por Prometheus; notificar necesita un receptor configurado.
+
+Una API es una puerta: pedís una operación mediante HTTP. Un DTO es la estructura de datos que cruza esa puerta. El código de negocio sigue adentro del componente responsable. MCP y Telegram permiten entrar por otra puerta, conservando las mismas reglas.
+
+2. LA IDEA MÁS IMPORTANTE: INGRESO, RESERVA Y ENTREGA SON DISTINTOS
+
+Ejemplo: una entidad pide diez unidades y alguien dona dos.
+1) Donaciones valida el donador/producto y registra la donación INGRESADA.
+2) Logística incorpora un paquete al depósito y envía trabajo de matchmaking al broker.
+3) Un worker busca una necesidad compatible según la configuración y reporta el resultado a Logística. El paquete puede quedar ASIGNADO a esa necesidad.
+4) Esa reserva evita ofrecer esas dos unidades a otra necesidad, pero todavía están dentro del depósito. La entidad aún no las recibió.
+5) Cuando se reporta la entrega, la donación pasa a ACEPTADA, la asignación queda entregada y la necesidad refleja las unidades efectivamente recibidas. Se libera ocupación física.
+6) Si se registra una queja válida después de la aceptación, la donación pasa a CONQUEJA y se aplican los efectos de la regla de quejas del donador. Una queja no debe inventar una devolución física al depósito.
+
+Si todavía no hay necesidad, el paquete queda disponible en stock. Registrar después una necesidad compatible puede iniciar el matchmaking sobre ese stock. En necesidades extraordinarias se admiten entregas parciales; para recurrentes respetamos el lote/objetivo del período. No presenten una entrega individual parcial como prueba válida de una recurrente.
+
+Un HTTP 201 de donación demuestra el alta; no prueba que Rabbit, el worker y la entrega hayan terminado. Hay que consultar los siguientes objetos. Ante timeout de un POST, consultar antes de repetir: puede haberse creado aunque el cliente no recibió respuesta.
+
+3. DEMO MANUAL EN POSTMAN
+
+Crear variables de entorno:
+donaciones = https://donaciones-xouj.onrender.com
+donadores = https://entrega-2-lolasimone.onrender.com
+logistica = https://donatrack-api-logistica-diseno-en-beta.onrender.com
+incentivos = https://entrega-2-melinazingales.onrender.com
+
+En cada request con cuerpo: Body > raw > JSON; Content-Type: application/json.
+Agregar X-Trace-Id: defensa-<fecha>-01 para seguir este recorrido en logs. Guardar cada ID devuelto; ID de donación, de paquete, de asignación y de necesidad son objetos distintos aunque casualmente algunos números coincidan. Postman no actualiza automáticamente testing/.estado.
+
+Primero abrir GET {{componente}}/actuator/health de las cuatro APIs. Despertarlas antes de clase. Render puede tardar varios minutos después de dormir. Revisar OpenAPI en /v3/api-docs para el contrato del servicio publicado.
+
+Preparar datos propios con prefijo DEMO_<fecha>, sin borrar los del grupo:
+A. POST {{donadores}}/donadores
+{"nombre":"DEMO_<fecha>","apellido":"Presentacion","edad":25,"email":"demo@example.test","nroDocumento":"NUMERO_UNICO","domicilio":"Medrano"}
+Guardar donadorID. Consultar GET /donadores/{donadorID}: debe permitir donar.
+B. POST {{donadores}}/entidades
+{"razonSocial":"DEMO_<fecha>","domicilio":"Medrano","telefono":"000","correo":"demo@example.test"}
+Guardar entidadID.
+C. POST {{logistica}}/depositos
+{"nombre":"DEMO_<fecha>","direccion":"Medrano","capacidadMaxima":100}
+Guardar depositoID; PATCH {{logistica}}/depositos/{depositoID}/algoritmo con {"algoritmo":"SUB_ATENDIDOS"}.
+D. POST {{donaciones}}/categorias
+{"nombre":"DEMO_<fecha> categoria","descripcion":"Presentacion"}
+Guardar categoriaID. Crear subcategoría en la misma ruta con:
+{"nombre":"DEMO_<fecha> subcategoria","descripcion":"Presentacion","categoriaPadreID":"CATEGORIA_ID"}
+Guardar subcategoriaID.
+E. POST {{donaciones}}/productos
+{"nombre":"DEMO_<fecha> producto","descripcion":"Presentacion","categoriaID":"CATEGORIA_ID","subcategoriaID":"SUBCATEGORIA_ID"}
+Guardar productoID. Usar este producto nuevo evita competir con necesidades previas del grupo.
+
+Recorrido principal:
+1) POST {{donadores}}/necesidades
+{"entidadID":"ENTIDAD_ID","productoSolicitadoID":"PRODUCTO_ID","descripcion":"DEMO_<fecha>","cantidadObjetivo":10,"nivelDeUrgencia":5,"tipo":"EXTRAORDINARIA"}
+Guardar necesidadID. GET /necesidades/{necesidadID}: cantidadAsignada inicialmente cero; acá significa cobertura física.
+2) POST {{donaciones}}/donaciones
+{"donadorID":"DONADOR_ID","depositoID":"DEPOSITO_ID","productoID":"PRODUCTO_ID","cantidad":2,"descripcion":"DEMO_<fecha>"}
+Guardar donacionID. GET /donaciones/{donacionID}: INGRESADA.
+3) GET {{logistica}}/depositos/{depositoID}; buscar el paquete cuyo donacionID coincide. Guardar paqueteID.
+4) GET {{logistica}}/asignaciones; buscar por paqueteID y guardar asignacionID. Repetir sólo las lecturas si aún no aparece: el procesamiento es asíncrono. Consultar GET /asignaciones/{asignacionID}: esperar ASIGNADA. PaqueteDTO no tiene campo estado; el estado se consulta en la asignación.
+5) Antes de entregar, mostrar necesidad con cobertura física cero y paquete reservado. Explicar por qué reserva no equivale a entrega.
+6) POST {{logistica}}/entregas con {"id":"PAQUETE_ID"}. Es ID DEL PAQUETE.
+7) Mostrar GET {{donaciones}}/donaciones/{donacionID}: ACEPTADA; GET {{donadores}}/necesidades/{necesidadID}: cantidadAsignada 2; GET de la asignación: entregada. El depósito debe reflejar la salida física.
+8) GET {{donadores}}/donadores/{donadorID}/estadisticas: mostrar los datos que devuelve, explicando cantidades y estados.
+9) POST {{donaciones}}/donaciones/{donacionID}/quejas con {"descripcion":"DEMO: entrega en malas condiciones"}. GET de la donación: CONQUEJA. Volver a consultar donador/estadísticas; no asumir que una sola queja lo banea.
+
+Incentivos:
+Una sola donación no alcanza para todas las misiones. La misión COMPLETITUD implementada exige productos de tres categorías distintas; repetir el recorrido con otras dos categorías y productos, o presembrarlo antes de exponer.
+POST {{incentivos}}/insignias con {"nombre":"DEMO insignia","descripcion":"Tres categorias"}; guardar insigniaID.
+POST {{incentivos}}/misiones con {"nombre":"DEMO completitud","insigniaID":"INSIGNIA_ID","categoriaInicio":"OCASIONAL","categoriaFin":"COLABORADOR","tipo":"COMPLETITUD"}; guardar misionID.
+POST {{incentivos}}/misiones/donador/{donadorID} con {"id":"MISION_ID"}.
+POST {{incentivos}}/procesamiento/{donadorID} sin cuerpo; 204 puede ser una respuesta correcta sin JSON. Mostrar GET /insignias/donador/{donadorID} y estadísticas del donador. El cron realiza procesamiento periódico; el endpoint permite demostrarlo sin esperar. La misión DONACIONES_EXITOSAS tiene otras condiciones; una queja puede cambiar su cumplimiento. No decir que todas las misiones se revocan igual.
+
+Variante stock y nueva necesidad:
+Donar un producto nuevo SIN necesidad; consultar su stock disponible. Crear necesidad compatible después, observar reserva/asignación, verificar que sigue sin entrega física y finalmente reportar la entrega. Es una buena prueba de integración en el orden inverso.
+
+Variante recurrente (sólo con despliegue actualizado): reservar dos paquetes de 4 y 6 para objetivo 10 y reportar POST {{logistica}}/entregas/lote con {"paqueteIds":["PAQUETE_4","PAQUETE_6"]}. Verificar cobertura 10, aceptación de ambas donaciones y liberación física. No improvisar este endpoint si OpenAPI no lo publica.
+
+4. VER ESTADO SIN EJECUTAR TODO OTRA VEZ
+
+Desde TPA en Git Bash, con curl y Python disponibles:
+bash testing/keepalive.sh
+Dejar corriendo antes de la presentación; terminar con Ctrl+C después.
+bash testing/00-salud.sh
+bash testing/estado.sh --detalle
+bash testing/ver-estado.sh donacion DONACION_ID --json
+bash testing/ver-estado.sh asignacion ASIGNACION_ID --json
+bash testing/ver-estado.sh necesidad NECESIDAD_ID --json
+bash testing/ver-estado.sh deposito DEPOSITO_ID --json
+bash testing/ver-estado.sh stock PRODUCTO_ID --json
+
+estado.sh utiliza IDs guardados por los scripts en .estado. Para altas hechas en Postman usar IDs explícitos; .estado no viaja a otra computadora con Git. No ejecutar correr-todo.sh ni 99-limpiar.sh en clase sin entender los efectos. El estado de negocio se ve en las APIs; un panel de CPU no reemplaza esas consultas.
+
+5. DEMO DE CLAUDE Y TELEGRAM
+
+Claude Desktop inicia el JAR Java local, negocia el protocolo y recibe el catálogo de 74 herramientas. Pedir primero: "Usá DonaTrack para consultar salud de los cuatro componentes y listar productos. No modifiques datos". Ver la herramienta invocada y contrastar su resultado con Postman. Después, con IDs propios: "Consultá la donación ID y explicame su estado" o indicar una operación concreta. Revisar qué herramienta y argumentos propone antes de aceptar. No depende de un modelo Claude dentro del backend ni necesita una API key de Anthropic para este modo Desktop; requiere sesión/acceso del cliente.
+
+Telegram: /start, /donador o /admin, /menu y /ayuda donaciones (también donadores, logistica, incentivos). Usar los comandos exactos que muestra /ayuda; no adivinar nombres o formatos. Hay consultas y ABMs del catálogo compartido. /pagina 2 muestra otra página del resultado guardado, sin repetir la escritura. Sólo UNA instancia en long polling por token. Un 409 puede ser otro compañero usando el mismo bot.
+
+Demostrar una misma consulta en Postman y en Claude o Telegram: el dato coincide porque todos llaman al mismo backend. No prometer que Claude soluciona reglas incorrectas o valida mejor que la API.
+
+6. LOGS, MÉTRICAS Y ALERTAS: TRES PREGUNTAS DIFERENTES
+
+Log: "¿Qué pasó con esta donación?". Buscar traceId, componente, evento y IDs en Better Stack Live Tail. El traceId se propaga por llamadas HTTP y por el trabajo de Rabbit/worker para correlacionar; esto no equivale a tener APM completo con spans.
+Métrica: "¿Cuánto ocurre y cómo evoluciona?". Contadores acumulados, gauges del estado actual e histogramas de tiempos. Ejemplos: donaciones rechazadas, necesidades faltantes, stock/ocupación/reservas, asignaciones pendientes, éxitos/errores de workers, errores HTTP y ciclos de incentivos. rate/increase convierten un contador acumulado en actividad por período. Algunos gauges se actualizan con caché de diez segundos; el scrape agrega otros quince.
+Alerta: "¿Cuándo hay que intervenir?". Prometheus evalúa una condición y su duración; Alertmanager puede notificar. No todas las métricas de negocio representan dinero o personas únicas; explicar la unidad de cada panel.
+
+Stack de presentación, desde testing/observabilidad en PowerShell:
+Copy-Item prometheus.presentacion.example.yml prometheus.local.yml
+Copy-Item compose.presentacion.example.yml compose.presentacion.local.yml
+docker compose -f compose.yaml -f compose.presentacion.local.yml up -d
+
+Abrir http://localhost:9090/targets y comprobar UP de los seis exporters, sin confundir con /actuator/health. Abrir /rules y /alerts. Grafana http://localhost:3000, credencial inicial admin/admin si es una instalación nueva; buscar tablero DonaTrack. Alertmanager http://localhost:9093 muestra las alertas recibidas. Abrir ventanas ANTES de clase.
+
+Consultas PromQL útiles:
+up
+logistica_depositos_ocupacion / clamp_min(logistica_depositos_capacidad, 1)
+donadores_necesidades_unidades_faltantes
+increase(logistica_worker_mensajes_procesados_total[5m])
+Si una consulta no devuelve series, no interpretar como cero: puede faltar la instrumentación, el scrape o un evento inicializador.
+
+Cómo demostrar DepositosCasiLlenos de punta a punta:
+1) Confirmar que Logística exporta logistica_depositos_ocupacion y logistica_depositos_capacidad. Sin eso la regla no se puede verificar con ese despliegue.
+2) Crear depósito propio capacidad 10 y producto nuevo sin necesidades. Ingresar diez unidades; esperar el procesamiento y consultar ocupación física. Nueve de diez es EXACTAMENTE 90% y la regla exige MAYOR que 90%; usar diez de diez.
+3) En Prometheus mostrar ratio 1. La alerta pasa a PENDING y, tras mantenerse más de un minuto y otra evaluación, FIRING. Alertmanager la agrupa (group_wait 10 s). Mostrarla allí.
+4) Para resolver: crear necesidad extraordinaria de diez de ese producto, esperar asignación y REPORTAR ENTREGA. Reservar por sí solo no libera lugar físico. Mostrar ratio 0 y desaparición de la alerta activa; si send_resolved está configurado, llega mensaje de resolución.
+No llenar un depósito compartido ni apagar el servicio del grupo para provocar una alarma. Si falta el exporter, primero corregir deploy; un mensaje sintético enviado a Alertmanager sólo prueba el receptor, no prueba esta regla ni el negocio.
+
+Notificación Telegram de alertas (separada del bot de negocio):
+El alertmanager.yml actual tiene un receptor vacío, por lo tanto permite mostrar alertas pero NO manda mensajes. Para mensajes, copiar alertmanager.telegram.example.yml a alertmanager.telegram.local.yml y poner el chat_id numérico autorizado. Guardar sólo el token en telegram-bot-token.local. El usuario o grupo debe permitir que el bot le escriba (en privado, iniciar /start; en grupo, agregar el bot). Ejecutar:
+docker compose -f compose.yaml -f compose.presentacion.local.yml -f compose.telegram.example.yaml up -d
+docker compose -f compose.yaml -f compose.presentacion.local.yml -f compose.telegram.example.yaml logs --tail 80 alertmanager
+No mostrar tokens en proyector ni subirlos a Git. Revisar logs de entrega para distinguir regla disparada de fallo de notificación. Esto no inicia otro poller; Alertmanager usa envío de mensajes.
+
+Las once reglas cubren: exporter no disponible (2 min), errores HTTP >5% con al menos cinco requests (2 min), donaciones rechazadas >30% con al menos cinco intentos (2 min), matchmaking pendiente sin progreso (3 min), depósitos >90% (1 min), tres revocaciones en diez minutos, errores de cron, errores de workers, entregas >24 h pendientes (5 min), cron sin ciclo exitoso y mensajes en DLQ (1 min). DLQ necesita exporter por cola del broker; las métricas de los workers NO reemplazan ese exporter. Algunas reglas sin "for" disparan en la siguiente evaluación cuando existe la serie y se cumple la condición.
+
+7. LO QUE NO SE PUEDE DAR POR COMPROBADO
+
+Ensayo real anterior: pasaron los seis flujos básicos con recursos propios y participaron ambos workers. La entrega recurrente completa quedó pendiente porque Logística publicada no ofrecía /entregas/lote; tampoco ofrecía /asignaciones ni /actuator/prometheus.
+
+Lecturas nuevas del 3/10: después del arranque lento, las cuatro APIs y ambos workers respondieron salud UP. Donaciones, Donadores, Incentivos y ambos workers respondieron Prometheus HTTP 200. Donadores YA muestra las métricas nuevas de necesidades, por lo que ese pendiente anterior está resuelto a nivel de exportación. Logística API SIGUE devolviendo HTTP 500 en /actuator/prometheus; OpenAPI sigue sin /entregas/lote, /asignaciones ni PUT /depositos/{id}. Prioridad antes de clase: el responsable debe revisar en Render repo/rama/comando y desplegar el main actualizado de Componente_Logistica. No culpar al MCP por un endpoint faltante. Esta comprobación es de salud/contrato/exportación: no repitió escrituras ni todos los flujos.
+
+Better Stack en Donaciones: ya se guardaron las tres variables en Render y se hizo deploy. El destino aceptó ingestión y Render registró una donación real, pero falta confirmar ese evento en Live Tail con la cuenta del grupo. Se observó además una advertencia de registro duplicado de tags de métricas en Donaciones: no basar la exposición de DonacionesRechazadas en contadores que aún no verificaron subir.
+
+Claude UI, instancia real del bot funcional y notificaciones de Alertmanager requieren ensayo humano con las cuentas/configuración correctas. CI verde, protocolo MCP correcto y pruebas locales no prueban esas cuentas externas. El archivo tmp/estado-presentacion-20261003.json contiene las lecturas nuevas si están disponibles en esta computadora; no se publica ni copia automáticamente.
+
+8. PREGUNTAS POSIBLES Y RESPUESTAS CORTAS
+
+¿Por qué MCP separado? Para implementar una sola vez el protocolo y el gateway; cada API conserva sus reglas. Un cliente local puede operar APIs remotas.
+¿Qué aporta Rabbit? Desacopla el ingreso del trabajo de matchmaking. Dos workers consumen la misma cola para repartir carga. Puede haber reintentos, por eso contar intentos y éxitos por separado y evitar repetir efectos del callback.
+¿Son todos los pasos una transacción? No hay una transacción global entre las cuatro bases y el broker. Existen límites locales, fallos de red y trabajo asíncrono. Mostrar estados, errores y reintentos; no afirmar consistencia instantánea ni exactly-once global.
+¿Por qué separar stock y reserva? Para no asignar dos veces lo mismo y no declarar recibida una donación antes de entregarla. Un paquete reservado todavía ocupa depósito.
+¿Qué cambió Telegram? Más operaciones y respuestas legibles/paginadas; se conserva el enfoque de roles y comandos exigido. No reemplaza el backend.
+¿Qué diferencia logs de métricas? Logs explican un caso concreto; métricas cuantifican tendencias. El tablero ayuda a decidir qué investigar, el traceId ayuda a encontrar el caso.
+¿Por qué no llega una alerta? Puede fallar scrape, regla/umbral/duración, envío Prometheus→Alertmanager o receptor→Telegram. Revisar cada tramo, no sólo el bot.
+¿Cómo sabemos que funciona? Mostrar entradas propias, los objetos resultantes en cada componente, participación del worker, cobertura física y logs/métricas. Separar pruebas locales de despliegue real.
+
+9. ORDEN DE EXPOSICIÓN SUGERIDO, 10–15 MINUTOS
+
+Antes: autenticar Claude/Better Stack, despertar APIs, abrir paneles, dejar datos base y tres categorías listas, anotar IDs, confirmar quién corre Telegram y el SHA de cada deploy. No gastar tiempo instalando infraestructura en el aula.
+1 min: explicar cuatro componentes y clientes.
+4 min: necesidad → donación → reserva → entrega, con antes/después en Postman.
+2 min: consulta equivalente por Claude y Telegram.
+2 min: queja, estadísticas y una misión preparada.
+3 min: trace en Better Stack, gráfico de ocupación y alerta PENDING→FIRING→resuelta.
+Cerrar mostrando límites y comprobaciones pendientes si los hubiera. Priorizar flujo básico probado antes de improvisar variantes que dependan de despliegues faltantes.

@@ -1,0 +1,6 @@
+# Copiar a compose.presentacion.local.yml; copiar el prometheus de presentacion
+# a prometheus.local.yml. Docker Compose combina el montaje por su destino.
+services:
+  prometheus:
+    volumes:
+      - ./prometheus.local.yml:/etc/prometheus/prometheus.yml:ro
