@@ -44,14 +44,14 @@ def main():
             if result.get('isError'): raise AssertionError((op['name'],result))
             used.add(op['name']); return result['structuredContent']['resultado']
         raise AssertionError('Falta herramienta para '+component+' '+method+' '+path)
-    def wait(description, action, predicate):
+    def wait(description, action, predicate, retry_statuses=(404,502,503,504)):
         deadline=time.monotonic()+args.timeout; last=None
         while time.monotonic()<deadline:
             try:
                 last=action()
                 if predicate(last): return last
             except HTTPError as ex:
-                if ex.code not in (404,502,503,504): raise
+                if ex.code not in retry_statuses: raise
                 last=str(ex)
             except (URLError, ConnectionError, TimeoutError) as ex:
                 last=str(ex)
@@ -61,7 +61,8 @@ def main():
         for component in PREFIX:
             wait('salud de '+component,
                  lambda c=component:http(c,'GET','/actuator/health'),
-                 lambda value:value.get('status')=='UP')
+                 lambda value:value.get('status')=='UP',
+                 retry_statuses=(404,500,502,503,504))
         wait('gateway y consultas',lambda:http('consultas','GET','/estado'),lambda x:x.get('servicio'))
         if args.mcp:
             sys.path.insert(0,str(HERE.parent/'local'))
