@@ -1,11 +1,5 @@
 name: Ensayo integrado entrega 6
 on:
-  push:
-    paths:
-      - '.github/workflows/entrega6.yml'
-      - 'entrega6/compose.yaml'
-      - 'entrega6/probar_demo.py'
-      - 'contratos/tools.json'
   workflow_dispatch:
 permissions:
   contents: read
