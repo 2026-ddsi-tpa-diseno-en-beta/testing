@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 from urllib.request import Request, urlopen
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 
 HERE=Path(__file__).resolve().parent
@@ -53,9 +53,15 @@ def main():
             except HTTPError as ex:
                 if ex.code not in (404,502,503,504): raise
                 last=str(ex)
+            except (URLError, ConnectionError, TimeoutError) as ex:
+                last=str(ex)
             time.sleep(0.5)
         raise AssertionError(f'{description}: no convergió; último resultado={last}')
     try:
+        for component in PREFIX:
+            wait('salud de '+component,
+                 lambda c=component:http(c,'GET','/actuator/health'),
+                 lambda value:value.get('status')=='UP')
         wait('gateway y consultas',lambda:http('consultas','GET','/estado'),lambda x:x.get('servicio'))
         if args.mcp:
             sys.path.insert(0,str(HERE.parent/'local'))
