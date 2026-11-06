@@ -26,32 +26,27 @@ jobs:
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/mcp-server
           ref: a5e3075f1eaa8f90cf7d547b06aa812839581e39
-          token: ${{ secrets.DONATRACK_READ_TOKEN || github.token }}
           path: mcp-server
       # Versiones utilizadas en la prueba integrada.
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/donaciones
           ref: f91e3bfe2e2b9214e576bf918eedebfafbdfdbb2
-          token: ${{ secrets.DONATRACK_READ_TOKEN || github.token }}
           path: donaciones
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Donadores-Y-Entidades
           ref: 7e79e6118575b96a4e2e8b81f42a56e2b7ac5ad3
-          token: ${{ secrets.DONATRACK_READ_TOKEN || github.token }}
           path: Donadores-Y-Entidades
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Componente_Logistica
           ref: 2cb1b50ec83810aee5beb4fce1c2406479e9c086
-          token: ${{ secrets.DONATRACK_READ_TOKEN || github.token }}
           path: Componente_Logistica
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Incentivos
           ref: 78b7d013666ff4bca11edb0bbb13e390d0da6fad
-          token: ${{ secrets.DONATRACK_READ_TOKEN || github.token }}
           path: Incentivos
       - uses: actions/setup-java@v4
         with:
