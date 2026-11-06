@@ -1,0 +1,4 @@
+CREATE DATABASE donaciones;
+CREATE DATABASE donadores;
+CREATE DATABASE logistica;
+CREATE DATABASE incentivos;

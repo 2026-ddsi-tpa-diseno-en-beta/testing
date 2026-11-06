@@ -1,0 +1,117 @@
+name: donatrack-entrega6
+x-api-env: &api-env
+  PORT: 8080
+  JAVA_TOOL_OPTIONS: -Xmx256m
+  TZ: America/Argentina/Buenos_Aires
+  SPRING_DATASOURCE_USERNAME: demo
+  SPRING_DATASOURCE_PASSWORD: demo-local
+  SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+  SPRING_JPA_HIBERNATE_DDL_AUTO: update
+  SPRING_JPA_OPEN_IN_VIEW: "false"
+  MANAGEMENT_DATADOG_METRICS_EXPORT_ENABLED: "false"
+  MANAGEMENT_OTLP_METRICS_EXPORT_ENABLED: "false"
+  RABBITMQ_URL: amqp://demo:demo-local@rabbitmq:5672/
+  READ_MODEL_PUBLISHER_ENABLED: "true"
+  READ_MODEL_ADMIN_KEY: ${READ_MODEL_ADMIN_KEY:-demo-local-only}
+  SPRING_JACKSON_DESERIALIZATION_FAIL_ON_UNKNOWN_PROPERTIES: "false"
+services:
+  postgres:
+    image: postgres:16
+    environment: {POSTGRES_USER: demo, POSTGRES_PASSWORD: demo-local, POSTGRES_DB: demo}
+    volumes: ["./init.sql:/docker-entrypoint-initdb.d/init.sql:ro", "postgres:/var/lib/postgresql/data"]
+    healthcheck: {test: [CMD-SHELL, "pg_isready -U demo -d demo"], interval: 5s, timeout: 3s, retries: 30}
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment: {RABBITMQ_DEFAULT_USER: demo, RABBITMQ_DEFAULT_PASS: demo-local}
+    ports: ["127.0.0.1:15672:15672", "127.0.0.1:5672:5672"]
+    volumes: ["rabbit:/var/lib/rabbitmq"]
+    healthcheck: {test: [CMD, rabbitmq-diagnostics, -q, ping], interval: 5s, timeout: 5s, retries: 30}
+  mongo:
+    image: mongo:7
+    ports: ["127.0.0.1:27017:27017"]
+    volumes: ["mongo:/data/db"]
+    healthcheck: {test: [CMD, mongosh, --quiet, --eval, "db.adminCommand('ping').ok"], interval: 5s, timeout: 5s, retries: 30}
+  consultas:
+    build: ../../Servicio_de_Consultas
+    environment:
+      TZ: America/Argentina/Buenos_Aires
+      PORT: 8085
+      JAVA_TOOL_OPTIONS: -Xmx256m
+      MONGODB_URI: mongodb://mongo:27017/donatrack
+      RABBITMQ_URL: amqp://demo:demo-local@rabbitmq:5672/
+      READ_MODEL_MESSAGING_ENABLED: "true"
+      READ_MODEL_QUEUE: donatrack.readmodel.v1.events
+      READ_MODEL_ADMIN_KEY: ${READ_MODEL_ADMIN_KEY:-demo-local-only}
+    depends_on: {mongo: {condition: service_healthy}, rabbitmq: {condition: service_healthy}}
+  donaciones:
+    build: ../../donaciones
+    environment:
+      <<: *api-env
+      SPRING_APPLICATION_NAME: donaciones
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/donaciones
+      DONATRACK_DONADORES_Y_ENTIDADES_URL: http://donadores:8080
+      DONATRACK_LOGISTICA_URL: http://logistica:8080
+    depends_on: {postgres: {condition: service_healthy}, consultas: {condition: service_started}}
+  donadores:
+    build: ../../Donadores-Y-Entidades
+    environment:
+      <<: *api-env
+      SPRING_APPLICATION_NAME: donadores
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/donadores
+      URL_DONACIONES: http://donaciones:8080
+      URL_LOGISTICA: http://logistica:8080
+      URL_INCENTIVOS: http://incentivos:8080
+    depends_on: {postgres: {condition: service_healthy}, consultas: {condition: service_started}}
+  logistica:
+    build: ../../Componente_Logistica
+    environment:
+      <<: *api-env
+      SPRING_APPLICATION_NAME: logistica
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logistica
+      INTEGRATIONS_DONADORES_URL: http://donadores:8080
+      INTEGRATIONS_DONACIONES_URL: http://donaciones:8080
+    depends_on: {postgres: {condition: service_healthy}, consultas: {condition: service_started}}
+  incentivos:
+    build: ../../Incentivos
+    environment:
+      <<: *api-env
+      SPRING_APPLICATION_NAME: incentivos
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/incentivos
+      DONATRACK_DONACIONES_URL: http://donaciones:8080
+      DONATRACK_DONADORES_Y_ENTIDADES_URL: http://donadores:8080
+    depends_on: {postgres: {condition: service_healthy}, consultas: {condition: service_started}}
+  worker-1:
+    build: ../../Componente_Logistica
+    command: [java, -jar, worker.jar]
+    environment: &worker-env
+      PORT: 8080
+      TZ: America/Argentina/Buenos_Aires
+      DONADORES_URL: http://donadores:8080
+      LOGISTICA_API_URL: http://logistica:8080
+      INTEGRATIONS_DONACIONES_URL: http://donaciones:8080
+      RABBITMQ_URL: amqp://demo:demo-local@rabbitmq:5672/
+      READ_MODEL_PUBLISHER_ENABLED: "false"
+      WORKER_ID: worker-1
+      JAVA_TOOL_OPTIONS: -Xmx192m
+    depends_on: {rabbitmq: {condition: service_healthy}, logistica: {condition: service_started}}
+  worker-2:
+    build: ../../Componente_Logistica
+    command: [java, -jar, worker.jar]
+    environment: {<<: *worker-env, WORKER_ID: worker-2}
+    depends_on: {rabbitmq: {condition: service_healthy}, logistica: {condition: service_started}}
+  gateway:
+    build: ../../API_Gateway
+    ports: ["127.0.0.1:8080:8080"]
+    environment:
+      PORT: 8080
+      JAVA_TOOL_OPTIONS: -Xmx192m
+      DONACIONES_URL: http://donaciones:8080
+      DONADORES_ENTIDADES_URL: http://donadores:8080
+      LOGISTICA_URL: http://logistica:8080
+      INCENTIVOS_URL: http://incentivos:8080
+      CONSULTAS_URL: http://consultas:8085
+    depends_on: [donaciones, donadores, logistica, incentivos, consultas]
+volumes:
+  postgres:
+  rabbit:
+  mongo:

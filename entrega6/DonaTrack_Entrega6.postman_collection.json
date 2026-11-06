@@ -1,0 +1,2612 @@
+{
+  "info": {
+    "name": "DonaTrack · Entrega 6 · Validación funcional",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Catálogo compartido con MCP y Telegram. Preparar el escenario con probar_demo.py y completar variables antes de ejecutar escrituras. No ejecutar todos los ABM indiscriminadamente."
+  },
+  "variable": [
+    {
+      "key": "gateway",
+      "value": "http://127.0.0.1:8080"
+    },
+    {
+      "key": "productoID",
+      "value": ""
+    },
+    {
+      "key": "categoriaID",
+      "value": ""
+    },
+    {
+      "key": "identificadorID",
+      "value": ""
+    },
+    {
+      "key": "donadorID",
+      "value": ""
+    },
+    {
+      "key": "entidadID",
+      "value": ""
+    },
+    {
+      "key": "necesidadID",
+      "value": ""
+    },
+    {
+      "key": "productoSolicitadoID",
+      "value": ""
+    },
+    {
+      "key": "depositoID",
+      "value": ""
+    },
+    {
+      "key": "insigniaID",
+      "value": ""
+    },
+    {
+      "key": "misionID",
+      "value": ""
+    },
+    {
+      "key": "donacionID",
+      "value": ""
+    },
+    {
+      "key": "id",
+      "value": ""
+    },
+    {
+      "key": "asignacionID",
+      "value": ""
+    },
+    {
+      "key": "urgenciaMinima",
+      "value": ""
+    },
+    {
+      "key": "tipo",
+      "value": ""
+    },
+    {
+      "key": "subcategoriaID",
+      "value": ""
+    },
+    {
+      "key": "limite",
+      "value": ""
+    },
+    {
+      "key": "desde",
+      "value": ""
+    },
+    {
+      "key": "hasta",
+      "value": ""
+    },
+    {
+      "key": "limiteDonadores",
+      "value": ""
+    },
+    {
+      "key": "fecha",
+      "value": "2026-11-06"
+    },
+    {
+      "key": "necesidadId",
+      "value": ""
+    },
+    {
+      "key": "productoId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Consultas",
+      "item": [
+        {
+          "name": "Ficha integral donador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/consultas/donadores/{{donadorID}}/ficha",
+            "description": "Ficha combinada desde MongoDB: categoría e historial, insignias, misión y progreso, donaciones por estado, quejas y entidades beneficiadas. Consistencia eventual: si acabás de operar, consultá de nuevo sin repetir el comando de escritura.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Necesidades urgentes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/consultas/necesidades/urgentes",
+            "description": "Necesidades sin cubrir ordenadas por urgencia, con stock disponible por depósito y unidades reservadas sin entregar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.\nFiltros admitidos: urgenciaMinima, tipo, categoriaID, subcategoriaID, limite"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reporte depositos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/consultas/depositos/reporte",
+            "description": "Ocupación, algoritmo, asignaciones por estado, entidades atendidas y tiempo medio desde ingreso hasta última entrega. El rango filtra fecha de ingreso. Fechas ISO yyyy-MM-dd o fecha-hora.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.\nFiltros admitidos: depositoID, desde, hasta"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Calidad donaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/consultas/calidad",
+            "description": "Calidad por categoría y subcategoría (donaciones CONQUEJA / total de donaciones) y donadores con más quejas, estado y categoría.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.\nFiltros admitidos: limiteDonadores"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estado sistema",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/consultas/estado",
+            "description": "Estado del modelo de lectura, cantidad de fichas, necesidades, depósitos y eventos procesados. No confundir consistencia eventual con falla de una operación.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Salud consultas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/consultas/actuator/health",
+            "description": "Comprobar salud de Consultas y conexión a MongoDB.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Donadores",
+      "item": [
+        {
+          "name": "Listar donadores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/donadores",
+            "description": "Consultar todos los donadores\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar donador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/donadores/{{donadorID}}",
+            "description": "Consultar donador por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/donadores",
+            "description": "Dar de alta donador. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"apellido\": \"Demo\",\n  \"edad\": 25,\n  \"email\": \"demo@example.com\",\n  \"nroDocumento\": \"123\",\n  \"domicilio\": \"Medrano\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"donadorID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar donador",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/donadores/{{donadorID}}",
+            "description": "Modificar donador existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"apellido\": \"Demo\",\n  \"edad\": 25,\n  \"email\": \"demo@example.com\",\n  \"nroDocumento\": \"123\",\n  \"domicilio\": \"Medrano\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar donador",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/donadores/{{donadorID}}",
+            "description": "Dar de baja donador existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar entidades",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/entidades",
+            "description": "Consultar todos los entidades\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar entidad",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/entidades/{{entidadID}}",
+            "description": "Consultar entidad por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear entidad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/entidades",
+            "description": "Dar de alta entidad. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razonSocial\": \"Demo\",\n  \"domicilio\": \"Medrano\",\n  \"telefono\": \"123\",\n  \"correo\": \"demo@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"entidadID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar entidad",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/entidades/{{entidadID}}",
+            "description": "Modificar entidad existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razonSocial\": \"Demo\",\n  \"domicilio\": \"Medrano\",\n  \"telefono\": \"123\",\n  \"correo\": \"demo@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar entidad",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/entidades/{{entidadID}}",
+            "description": "Dar de baja entidad existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar necesidades",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/necesidades",
+            "description": "Consultar todos los necesidades\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar necesidad",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/necesidades/{{necesidadID}}",
+            "description": "Consultar necesidad por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear necesidad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/necesidades",
+            "description": "Dar de alta necesidad. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entidadID\": \"{{entidadID}}\",\n  \"productoSolicitadoID\": \"{{productoSolicitadoID}}\",\n  \"descripcion\": \"Demo\",\n  \"cantidadObjetivo\": 5,\n  \"nivelDeUrgencia\": 5,\n  \"tipo\": \"EXTRAORDINARIA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"necesidadID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar necesidad",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/necesidades/{{necesidadID}}",
+            "description": "Modificar necesidad existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entidadID\": \"{{entidadID}}\",\n  \"productoSolicitadoID\": \"{{productoSolicitadoID}}\",\n  \"descripcion\": \"Demo\",\n  \"cantidadObjetivo\": 5,\n  \"nivelDeUrgencia\": 5,\n  \"tipo\": \"EXTRAORDINARIA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar necesidad",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/necesidades/{{necesidadID}}",
+            "description": "Dar de baja necesidad existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estadisticas donador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/donadores/{{donadorID}}/estadisticas",
+            "description": "Obtener estado, categoría, insignias y misión actual del donador\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quejas donador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/donadores/{{donadorID}}/quejas",
+            "description": "Consultar historial de quejas del donador\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estado donador",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/donadores/{{donadorID}}/estado",
+            "description": "Establecer manualmente el estado de un donador Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"VERIFICADO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Periodo necesidad",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/necesidades/{{necesidadID}}/periodo",
+            "description": "Consultar si una necesidad es semanal o mensual y el inicio del período vigente\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear necesidad mensual",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/necesidades?periodo=MENSUAL",
+            "description": "Registrar una necesidad recurrente mensual. DonaTrack valida el producto y reserva stock si alcanza el objetivo. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entidadID\": \"{{entidadID}}\",\n  \"productoSolicitadoID\": \"{{productoSolicitadoID}}\",\n  \"descripcion\": \"Demo\",\n  \"cantidadObjetivo\": 5,\n  \"nivelDeUrgencia\": 5,\n  \"tipo\": \"RECURRENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"necesidadID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Salud donadores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/actuator/health",
+            "description": "Consultar disponibilidad del componente donadores\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Metricas donadores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donadores-entidades/actuator/metrics",
+            "description": "Consultar nombres de métricas disponibles en donadores\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Donaciones",
+      "item": [
+        {
+          "name": "Listar productos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/productos",
+            "description": "Consultar todos los productos\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar producto",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/productos/{{productoID}}",
+            "description": "Consultar producto por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/productos",
+            "description": "Dar de alta producto. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"descripcion\": \"Demo\",\n  \"categoriaID\": \"{{categoriaID}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"productoID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/productos/{{productoID}}",
+            "description": "Modificar producto existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"descripcion\": \"Demo\",\n  \"categoriaID\": \"{{categoriaID}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar producto",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/productos/{{productoID}}",
+            "description": "Dar de baja producto existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar categorias",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/categorias",
+            "description": "Consultar todos los categorias\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar categoria",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/categorias/{{categoriaID}}",
+            "description": "Consultar categoria por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear categoria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/categorias",
+            "description": "Dar de alta categoria. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"descripcion\": \"Demo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"categoriaID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar categoria",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/categorias/{{categoriaID}}",
+            "description": "Modificar categoria existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"descripcion\": \"Demo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar categoria",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/categorias/{{categoriaID}}",
+            "description": "Dar de baja categoria existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar identificadores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/identificadores",
+            "description": "Consultar todos los identificadores\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar identificador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/identificadores/{{identificadorID}}",
+            "description": "Consultar identificador por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear identificador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/identificadores",
+            "description": "Dar de alta identificador. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"CODIGODEBARRAS\",\n  \"descripcion\": \"Demo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"identificadorID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar identificador",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/identificadores/{{identificadorID}}",
+            "description": "Modificar identificador existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"CODIGODEBARRAS\",\n  \"descripcion\": \"Demo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar identificador",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/identificadores/{{identificadorID}}",
+            "description": "Dar de baja identificador existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar donaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/donaciones",
+            "description": "Consultar donaciones registradas\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar donacion",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/donaciones/{{donacionID}}",
+            "description": "Consultar el estado de una donación\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Realizar donacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/donaciones",
+            "description": "Registrar una donación de un producto existente a un depósito con matchmaking configurado. DonaTrack valida al donador y procesa la asignación asincrónicamente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"donadorID\": \"{{donadorID}}\",\n  \"depositoID\": \"{{depositoID}}\",\n  \"productoID\": \"{{productoID}}\",\n  \"descripcion\": \"Demo\",\n  \"cantidad\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"donacionID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Historial donacion",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/donaciones/{{donacionID}}/historial",
+            "description": "Consultar trazabilidad de estados de la donación\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar queja",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/donaciones/{{id}}/quejas",
+            "description": "Registrar una queja sobre una donación ya entregada (ACEPTADA). Actualiza donación y donador. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Demo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Salud donaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/actuator/health",
+            "description": "Consultar disponibilidad del componente donaciones\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Metricas donaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/actuator/metrics",
+            "description": "Consultar nombres de métricas disponibles en donaciones\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Subcategorias de categoria",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/categorias/{{categoriaID}}/subcategorias",
+            "description": "Listar las subcategorías de una categoría antes de clasificar un producto.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Donaciones de donador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/donaciones/donaciones?donadorID={{donadorID}}&fecha={{fecha}}",
+            "description": "Consultar donaciones de un donador desde una fecha ISO yyyy-MM-dd.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.\nFiltros admitidos: donadorID, fecha"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Logistica",
+      "item": [
+        {
+          "name": "Listar depositos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/depositos",
+            "description": "Consultar todos los depositos\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar deposito",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/depositos/{{depositoID}}",
+            "description": "Consultar deposito por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear deposito",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/depositos",
+            "description": "Dar de alta deposito. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"direccion\": \"Medrano\",\n  \"capacidadMaxima\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"depositoID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar deposito",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/depositos/{{depositoID}}",
+            "description": "Modificar deposito existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"direccion\": \"Medrano\",\n  \"capacidadMaxima\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar deposito",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/depositos/{{depositoID}}",
+            "description": "Dar de baja deposito existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar stock",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/stock/{{id}}",
+            "description": "Consultar cantidad disponible del producto identificado por id\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar asignaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/asignaciones",
+            "description": "Consultar asignaciones, estados, paquetes y origen (matchmaking o solicitud de entidad)\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar asignacion",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/asignaciones/{{asignacionID}}",
+            "description": "Consultar una asignación por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reportar entrega",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/entregas",
+            "description": "Reportar entrega de un paquete asignado: completa asignación, satisface necesidad y acepta la donación. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reportar entrega lote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/entregas/lote",
+            "description": "Reportar una única entrega física de varios paquetes asignados a la misma necesidad. Para recurrentes el lote debe cubrir el objetivo completo. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paqueteIds\": [\n    \"{{paqueteID}}\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Configurar matchmaking",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/depositos/{{id}}/algoritmo",
+            "description": "Configurar algoritmo del depósito antes de recibir donaciones. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"algoritmo\": \"SUB_ATENDIDOS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Salud logistica",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/actuator/health",
+            "description": "Consultar disponibilidad del componente logistica\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Metricas logistica",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/actuator/metrics",
+            "description": "Consultar nombres de métricas disponibles en logistica\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Asignar stock a necesidad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/logistica/stock/asignaciones",
+            "description": "Reservar stock disponible para una necesidad existente. La reserva no significa entrega. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"necesidadId\": \"{{necesidadId}}\",\n  \"productoId\": \"{{productoId}}\",\n  \"cantidad\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Incentivos",
+      "item": [
+        {
+          "name": "Listar insignias",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/insignias",
+            "description": "Consultar todos los insignias\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar insignia",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/insignias/{{insigniaID}}",
+            "description": "Consultar insignia por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear insignia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/insignias",
+            "description": "Dar de alta insignia. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"descripcion\": \"Demo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"insigniaID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar insignia",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/insignias/{{insigniaID}}",
+            "description": "Modificar insignia existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"descripcion\": \"Demo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar insignia",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/insignias/{{insigniaID}}",
+            "description": "Dar de baja insignia existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar misiones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/misiones",
+            "description": "Consultar todos los misiones\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar mision",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/misiones/{{misionID}}",
+            "description": "Consultar mision por ID\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear mision",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/misiones",
+            "description": "Dar de alta mision. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"insigniaID\": \"{{insigniaID}}\",\n  \"categoriaInicio\": \"OCASIONAL\",\n  \"categoriaFin\": \"OCASIONAL\",\n  \"tipo\": \"COMPLETITUD\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));",
+                  "if(pm.response.code < 300) { const data=pm.response.json(); if(data.id) pm.collectionVariables.set(\"misionID\",data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar mision",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/misiones/{{misionID}}",
+            "description": "Modificar mision existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Demo\",\n  \"insigniaID\": \"{{insigniaID}}\",\n  \"categoriaInicio\": \"OCASIONAL\",\n  \"categoriaFin\": \"OCASIONAL\",\n  \"tipo\": \"COMPLETITUD\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar mision",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/misiones/{{misionID}}",
+            "description": "Dar de baja mision existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Procesar donador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/procesamiento/{{donadorID}}",
+            "description": "Evaluar misiones y actualizar categoría e insignias; también revoca donaciones exitosas si hay quejas. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Asignar mision",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/misiones/donador/{{donadorID}}",
+            "description": "Asignar al donador id una misión del catálogo; respeta categoría y secuencia. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Asignar insignia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/insignias/donador/{{donadorID}}",
+            "description": "Asignar manualmente una insignia del catálogo a un donador registrado. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mision donador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/misiones/donador/{{donadorID}}",
+            "description": "Consultar misión en curso del donador (sin contenido si no tiene misión activa)\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Insignias donador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/insignias/donador/{{donadorID}}",
+            "description": "Consultar insignias obtenidas por el donador\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Salud incentivos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/actuator/health",
+            "description": "Consultar disponibilidad del componente incentivos\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Metricas incentivos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/api/incentivos/actuator/metrics",
+            "description": "Consultar nombres de métricas disponibles en incentivos\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gateway",
+      "item": [
+        {
+          "name": "Salud gateway",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/actuator/health",
+            "description": "Comprobar disponibilidad del punto de entrada único.\nUsar los IDs del escenario; las consultas reflejan consistencia eventual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Respuesta exitosa\", () => pm.expect(pm.response.code).to.be.within(200,299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

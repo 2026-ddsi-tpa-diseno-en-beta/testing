@@ -65,6 +65,8 @@ Ver también la [guía rápida](GUIA.md) con las recetas para casos concretos.
 | `20-flujo-necesidad-y-stock.sh` | Validación del producto, consulta de stock y asignación inmediata (el caso N-1). |
 | `21-flujo-parcialidad-por-tipo.sh` | Con stock insuficiente: EXTRAORDINARIA acepta parcial, RECURRENTE no. |
 | `22-contratos-del-bot.sh` | Los endpoints que consume el bot, con los mismos bodies que él manda. |
+| `24-flujo-distribucion-workers.sh` | Publica varias donaciones y compara `rabbitmq.consumed` por worker para demostrar distribución de carga. |
+| `25-flujo-asignacion-directa.sh` | Prueba directo `POST /stock/asignaciones`: baja stock y crea asignación `SOLICITUD_ENTIDAD`. |
 | **Crear cosas de a una** (por argumento o preguntando) | |
 | `cargar-quejas.sh` | Agrega quejas a un donador y muestra como cambian quejas, estado y puede-donar. |
 | `modificar-necesidad.sh` | Cambia descripcion, cantidad, urgencia, tipo, producto o entidad de una necesidad existente. |

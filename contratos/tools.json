@@ -10,6 +10,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -30,6 +36,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -37,7 +49,7 @@
     "component": "donaciones",
     "method": "POST",
     "path": "/productos",
-    "description": "Dar de alta producto. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta producto. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -72,6 +84,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -79,7 +97,7 @@
     "component": "donaciones",
     "method": "PUT",
     "path": "/productos/{id}",
-    "description": "Modificar producto existente respetando las reglas y referencias del componente.",
+    "description": "Modificar producto existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -119,6 +137,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -126,7 +150,7 @@
     "component": "donaciones",
     "method": "DELETE",
     "path": "/productos/{id}",
-    "description": "Dar de baja producto existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja producto existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -139,6 +163,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -152,6 +182,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -172,6 +208,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -179,7 +221,7 @@
     "component": "donaciones",
     "method": "POST",
     "path": "/categorias",
-    "description": "Dar de alta categoria. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta categoria. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -207,6 +249,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -214,7 +262,7 @@
     "component": "donaciones",
     "method": "PUT",
     "path": "/categorias/{id}",
-    "description": "Modificar categoria existente respetando las reglas y referencias del componente.",
+    "description": "Modificar categoria existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -247,6 +295,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -254,7 +308,7 @@
     "component": "donaciones",
     "method": "DELETE",
     "path": "/categorias/{id}",
-    "description": "Dar de baja categoria existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja categoria existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -267,6 +321,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -280,6 +340,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -300,6 +366,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -307,7 +379,7 @@
     "component": "donaciones",
     "method": "POST",
     "path": "/identificadores",
-    "description": "Dar de alta identificador. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta identificador. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -336,6 +408,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -343,7 +421,7 @@
     "component": "donaciones",
     "method": "PUT",
     "path": "/identificadores/{id}",
-    "description": "Modificar identificador existente respetando las reglas y referencias del componente.",
+    "description": "Modificar identificador existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -377,6 +455,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -384,7 +468,7 @@
     "component": "donaciones",
     "method": "DELETE",
     "path": "/identificadores/{id}",
-    "description": "Dar de baja identificador existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja identificador existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -397,6 +481,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -410,6 +500,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -430,6 +526,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -437,7 +539,7 @@
     "component": "donadores",
     "method": "POST",
     "path": "/donadores",
-    "description": "Dar de alta donador. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta donador. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -478,6 +580,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -485,7 +593,7 @@
     "component": "donadores",
     "method": "PUT",
     "path": "/donadores/{id}",
-    "description": "Modificar donador existente respetando las reglas y referencias del componente.",
+    "description": "Modificar donador existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -531,6 +639,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -538,7 +652,7 @@
     "component": "donadores",
     "method": "DELETE",
     "path": "/donadores/{id}",
-    "description": "Dar de baja donador existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja donador existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -551,6 +665,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -564,6 +684,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -584,6 +710,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -591,7 +723,7 @@
     "component": "donadores",
     "method": "POST",
     "path": "/entidades",
-    "description": "Dar de alta entidad. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta entidad. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -624,6 +756,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -631,7 +769,7 @@
     "component": "donadores",
     "method": "PUT",
     "path": "/entidades/{id}",
-    "description": "Modificar entidad existente respetando las reglas y referencias del componente.",
+    "description": "Modificar entidad existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -669,6 +807,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -676,7 +820,7 @@
     "component": "donadores",
     "method": "DELETE",
     "path": "/entidades/{id}",
-    "description": "Dar de baja entidad existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja entidad existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -689,6 +833,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -702,6 +852,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -722,6 +878,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -729,7 +891,7 @@
     "component": "donadores",
     "method": "POST",
     "path": "/necesidades",
-    "description": "Dar de alta necesidad. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta necesidad. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -774,6 +936,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -781,7 +949,7 @@
     "component": "donadores",
     "method": "PUT",
     "path": "/necesidades/{id}",
-    "description": "Modificar necesidad existente respetando las reglas y referencias del componente.",
+    "description": "Modificar necesidad existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -831,6 +999,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -838,7 +1012,7 @@
     "component": "donadores",
     "method": "DELETE",
     "path": "/necesidades/{id}",
-    "description": "Dar de baja necesidad existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja necesidad existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -851,6 +1025,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -864,6 +1044,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -884,6 +1070,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -891,7 +1083,7 @@
     "component": "logistica",
     "method": "POST",
     "path": "/depositos",
-    "description": "Dar de alta deposito. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta deposito. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -920,6 +1112,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -927,7 +1125,7 @@
     "component": "logistica",
     "method": "PUT",
     "path": "/depositos/{id}",
-    "description": "Modificar deposito existente respetando las reglas y referencias del componente.",
+    "description": "Modificar deposito existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -961,6 +1159,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -968,7 +1172,7 @@
     "component": "logistica",
     "method": "DELETE",
     "path": "/depositos/{id}",
-    "description": "Dar de baja deposito existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja deposito existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -981,6 +1185,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -994,6 +1204,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1014,6 +1230,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1021,7 +1243,7 @@
     "component": "incentivos",
     "method": "POST",
     "path": "/insignias",
-    "description": "Dar de alta insignia. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta insignia. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1046,6 +1268,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1053,7 +1281,7 @@
     "component": "incentivos",
     "method": "PUT",
     "path": "/insignias/{id}",
-    "description": "Modificar insignia existente respetando las reglas y referencias del componente.",
+    "description": "Modificar insignia existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1083,6 +1311,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1090,7 +1324,7 @@
     "component": "incentivos",
     "method": "DELETE",
     "path": "/insignias/{id}",
-    "description": "Dar de baja insignia existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja insignia existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1103,6 +1337,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1116,6 +1356,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1136,6 +1382,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1143,7 +1395,7 @@
     "component": "incentivos",
     "method": "POST",
     "path": "/misiones",
-    "description": "Dar de alta mision. Devuelve el ID generado por DonaTrack.",
+    "description": "Dar de alta mision. Devuelve el ID generado por DonaTrack. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1200,6 +1452,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1207,7 +1465,7 @@
     "component": "incentivos",
     "method": "PUT",
     "path": "/misiones/{id}",
-    "description": "Modificar mision existente respetando las reglas y referencias del componente.",
+    "description": "Modificar mision existente respetando las reglas y referencias del componente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1269,6 +1527,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1276,7 +1540,7 @@
     "component": "incentivos",
     "method": "DELETE",
     "path": "/misiones/{id}",
-    "description": "Dar de baja mision existente. Puede rechazarse si está en uso.",
+    "description": "Dar de baja mision existente. Puede rechazarse si está en uso. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1289,6 +1553,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1302,6 +1572,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1322,6 +1598,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1329,7 +1611,7 @@
     "component": "donaciones",
     "method": "POST",
     "path": "/donaciones",
-    "description": "Registrar una donación de un producto existente a un depósito con matchmaking configurado. DonaTrack valida al donador y procesa la asignación asincrónicamente.",
+    "description": "Registrar una donación de un producto existente a un depósito con matchmaking configurado. DonaTrack valida al donador y procesa la asignación asincrónicamente. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1366,6 +1648,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1386,6 +1674,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1393,7 +1687,7 @@
     "component": "donaciones",
     "method": "POST",
     "path": "/donaciones/{id}/quejas",
-    "description": "Registrar una queja sobre una donación ya entregada (ACEPTADA). Actualiza donación y donador.",
+    "description": "Registrar una queja sobre una donación ya entregada (ACEPTADA). Actualiza donación y donador. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1419,6 +1713,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1439,6 +1739,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1459,6 +1765,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1466,7 +1778,7 @@
     "component": "donadores",
     "method": "PATCH",
     "path": "/donadores/{id}/estado",
-    "description": "Establecer manualmente el estado de un donador",
+    "description": "Establecer manualmente el estado de un donador Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1497,6 +1809,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1517,6 +1835,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1530,6 +1854,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1550,6 +1880,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1557,7 +1893,7 @@
     "component": "logistica",
     "method": "POST",
     "path": "/entregas",
-    "description": "Reportar entrega de un paquete asignado: completa asignación, satisface necesidad y acepta la donación.",
+    "description": "Reportar entrega de un paquete asignado: completa asignación, satisface necesidad y acepta la donación. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1578,6 +1914,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1585,7 +1927,7 @@
     "component": "logistica",
     "method": "POST",
     "path": "/entregas/lote",
-    "description": "Reportar una única entrega física de varios paquetes asignados a la misma necesidad. Para recurrentes el lote debe cubrir el objetivo completo.",
+    "description": "Reportar una única entrega física de varios paquetes asignados a la misma necesidad. Para recurrentes el lote debe cubrir el objetivo completo. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1609,6 +1951,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1629,6 +1977,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1636,7 +1990,7 @@
     "component": "donadores",
     "method": "POST",
     "path": "/necesidades?periodo=MENSUAL",
-    "description": "Registrar una necesidad recurrente mensual. DonaTrack valida el producto y reserva stock si alcanza el objetivo.",
+    "description": "Registrar una necesidad recurrente mensual. DonaTrack valida el producto y reserva stock si alcanza el objetivo. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1680,6 +2034,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1687,7 +2047,7 @@
     "component": "logistica",
     "method": "PATCH",
     "path": "/depositos/{id}/algoritmo",
-    "description": "Configurar algoritmo del depósito antes de recibir donaciones.",
+    "description": "Configurar algoritmo del depósito antes de recibir donaciones. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1717,6 +2077,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1724,7 +2090,7 @@
     "component": "incentivos",
     "method": "POST",
     "path": "/procesamiento/{id}",
-    "description": "Evaluar misiones y actualizar categoría e insignias; también revoca donaciones exitosas si hay quejas.",
+    "description": "Evaluar misiones y actualizar categoría e insignias; también revoca donaciones exitosas si hay quejas. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1737,6 +2103,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1744,7 +2116,7 @@
     "component": "incentivos",
     "method": "POST",
     "path": "/misiones/donador/{id}",
-    "description": "Asignar al donador id una misión del catálogo; respeta categoría y secuencia.",
+    "description": "Asignar al donador id una misión del catálogo; respeta categoría y secuencia. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1770,6 +2142,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1777,7 +2155,7 @@
     "component": "incentivos",
     "method": "POST",
     "path": "/insignias/donador/{id}",
-    "description": "Asignar manualmente una insignia del catálogo a un donador registrado.",
+    "description": "Asignar manualmente una insignia del catálogo a un donador registrado. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
     "schema": {
       "type": "object",
       "properties": {
@@ -1803,6 +2181,12 @@
         "datos"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
@@ -1823,6 +2207,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1843,6 +2233,12 @@
         "id"
       ],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1856,6 +2252,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1869,6 +2271,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1882,6 +2290,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1895,6 +2309,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1908,6 +2328,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1921,6 +2347,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1934,6 +2366,12 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1947,6 +2385,313 @@
       "properties": {},
       "required": [],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ficha_integral_donador",
+    "component": "consultas",
+    "method": "GET",
+    "path": "/donadores/{id}/ficha",
+    "description": "Ficha combinada desde MongoDB: categoría e historial, insignias, misión y progreso, donaciones por estado, quejas y entidades beneficiadas. Consistencia eventual: si acabás de operar, consultá de nuevo sin repetir el comando de escritura.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "necesidades_urgentes",
+    "component": "consultas",
+    "method": "GET",
+    "path": "/necesidades/urgentes",
+    "description": "Necesidades sin cubrir ordenadas por urgencia, con stock disponible por depósito y unidades reservadas sin entregar.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "filtros": {
+          "type": "object",
+          "properties": {
+            "urgenciaMinima": {
+              "type": "integer"
+            },
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "RECURRENTE",
+                "EXTRAORDINARIA"
+              ]
+            },
+            "categoriaID": {
+              "type": "string"
+            },
+            "subcategoriaID": {
+              "type": "string"
+            },
+            "limite": {
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "reporte_depositos",
+    "component": "consultas",
+    "method": "GET",
+    "path": "/depositos/reporte",
+    "description": "Ocupación, algoritmo, asignaciones por estado, entidades atendidas y tiempo medio desde ingreso hasta última entrega. El rango filtra fecha de ingreso. Fechas ISO yyyy-MM-dd o fecha-hora.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "filtros": {
+          "type": "object",
+          "properties": {
+            "depositoID": {
+              "type": "string"
+            },
+            "desde": {
+              "type": "string"
+            },
+            "hasta": {
+              "type": "string"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "calidad_donaciones",
+    "component": "consultas",
+    "method": "GET",
+    "path": "/calidad",
+    "description": "Calidad por categoría y subcategoría (donaciones CONQUEJA / total de donaciones) y donadores con más quejas, estado y categoría.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "filtros": {
+          "type": "object",
+          "properties": {
+            "limiteDonadores": {
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "estado_sistema",
+    "component": "consultas",
+    "method": "GET",
+    "path": "/estado",
+    "description": "Estado del modelo de lectura, cantidad de fichas, necesidades, depósitos y eventos procesados. No confundir consistencia eventual con falla de una operación.",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "salud_consultas",
+    "component": "consultas",
+    "method": "GET",
+    "path": "/actuator/health",
+    "description": "Comprobar salud de Consultas y conexión a MongoDB.",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "salud_gateway",
+    "component": "gateway",
+    "method": "GET",
+    "path": "/actuator/health",
+    "description": "Comprobar disponibilidad del punto de entrada único.",
+    "schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "subcategorias_de_categoria",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/categorias/{id}/subcategorias",
+    "description": "Listar las subcategorías de una categoría antes de clasificar un producto.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador existente obtenido en una consulta o alta"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "donaciones_de_donador",
+    "component": "donaciones",
+    "method": "GET",
+    "path": "/donaciones",
+    "description": "Consultar donaciones de un donador desde una fecha ISO yyyy-MM-dd.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "filtros": {
+          "type": "object",
+          "properties": {
+            "donadorID": {
+              "type": "string"
+            },
+            "fecha": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "donadorID",
+            "fecha"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "filtros"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "asignar_stock_a_necesidad",
+    "component": "logistica",
+    "method": "POST",
+    "path": "/stock/asignaciones",
+    "description": "Reservar stock disponible para una necesidad existente. La reserva no significa entrega. Confirmá con el usuario los datos y referencias antes de modificar. Ante timeout verificá el estado antes de reintentar.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "type": "object",
+          "properties": {
+            "necesidadId": {
+              "type": "string"
+            },
+            "productoId": {
+              "type": "string"
+            },
+            "cantidad": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "necesidadId",
+            "productoId",
+            "cantidad"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "datos"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   }
 ]

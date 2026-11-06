@@ -14,7 +14,7 @@ import probar_integracion as suite
 
 
 class McpClient:
-    def __init__(self):
+    def __init__(self, gateway=None):
         self.sequence = 0
         self.messages = queue.Queue()
         env = os.environ.copy()
@@ -22,6 +22,10 @@ class McpClient:
             env.pop(key, None)
         for _, component, port in suite.SERVICES:
             env[component.upper() + '_API_URL'] = f'http://127.0.0.1:{port}'
+        if gateway:
+            for component in ('DONACIONES','DONADORES','LOGISTICA','INCENTIVOS','CONSULTAS'):
+                env.pop(component+'_API_URL',None)
+            env['GATEWAY_URL']=gateway
         self.log = (suite.OUTPUT / 'mcp.log').open('w', encoding='utf-8')
         self.process = subprocess.Popen(
             [env.get('JAVA_EXE', 'java'), '-jar',
@@ -92,7 +96,7 @@ def main():
             if data is not None:
                 arguments['datos'] = data
             result = client.call('tools/call', dict(name=operation['name'], arguments=arguments))
-            payload = json.loads(result['content'][0]['text'])
+            payload = result['structuredContent']
             status = payload['status']
             assert payload['traceId'], payload
             assert bool(result.get('isError')) == (status >= 400), result

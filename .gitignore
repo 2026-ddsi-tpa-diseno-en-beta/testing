@@ -9,3 +9,7 @@ config.sh
 __pycache__/
 observabilidad/*.local.yml
 observabilidad/*.local
+entrega6/*.local.yml
+entrega6/*.local.json
+entrega6/*.local
+entrega6/evidencia.local/

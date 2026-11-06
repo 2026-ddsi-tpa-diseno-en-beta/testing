@@ -166,6 +166,37 @@ ASIG_DESPUES=$(campo '.asignaciones'); [ -z "$ASIG_DESPUES" ] && ASIG_DESPUES=0
 detalle "asignaciones: $ASIG_DESPUES (antes: $ASIG_ANTES)"
 if [ "$ASIG_DESPUES" -gt "$ASIG_ANTES" ]; then
   ok "se creo la asignacion desde stock, sin pasar por la cola"
+
+  paso "La asignacion creada tiene que ser por solicitud de Donadores, no por matchmaking"
+  ASIGNACION_STOCK=$(python_json - "$URL_LOGISTICA" "$NECESIDAD_STOCK" "$ASIG_DESPUES" <<'PY'
+import json, subprocess, sys
+base, necesidad, limite = sys.argv[1], sys.argv[2], int(sys.argv[3])
+for i in range(1, limite + 25):
+    try:
+        raw = subprocess.check_output(
+            ["curl", "-sS", "-m", "20", f"{base}/asignaciones/{i}"],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        data = json.loads(raw)
+    except Exception:
+        continue
+    if str(data.get("necesidadID")) == str(necesidad):
+        print(data.get("id"))
+        break
+PY
+)
+  if [ -n "$ASIGNACION_STOCK" ] && [ "$ASIGNACION_STOCK" != "null" ]; then
+    guardar ASIGNACION_STOCK "$ASIGNACION_STOCK"
+    req GET "$URL_LOGISTICA/asignaciones/$ASIGNACION_STOCK"
+    verificar "origen de la asignacion" "SOLICITUD_ENTIDAD" "$(campo '.origen')"
+    verificar "estado de la asignacion" "ASIGNADA" "$(campo '.estado')"
+    verificar "necesidad asociada" "$NECESIDAD_STOCK" "$(campo '.necesidadID')"
+    verificar "cantidad asignada" "$OBJETIVO" "$(campo '.cantidadAsignada')"
+  else
+    aviso "no pude identificar la asignacion de la necesidad $NECESIDAD_STOCK"
+    detalle "igual aumento el contador total; revisar con ./ver-logistica.sh --detalle"
+  fi
 else
   falla "no se creo ninguna asignacion"
   echo ""
