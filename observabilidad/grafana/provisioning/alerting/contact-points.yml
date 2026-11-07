@@ -1,0 +1,12 @@
+# En Grafana Cloud, los destinatarios deben ser miembros de la organizacion.
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: DonaTrack - Email
+    receivers:
+      - uid: cg3j4erjz7wn4e
+        type: email
+        settings:
+          addresses: fbremberg@frba.utn.edu.ar;dolivo@frba.utn.edu.ar;mzingales@frba.utn.edu.ar;losimone@frba.utn.edu.ar
+          singleEmail: false
+        disableResolveMessage: false
