@@ -15,6 +15,42 @@ from urllib.parse import urlparse
 HERE=Path(__file__).resolve().parent
 PREFIX={'donaciones':'donaciones','donadores':'donadores-entidades','logistica':'logistica','incentivos':'incentivos','consultas':'consultas'}
 
+class McpResponseError(AssertionError):
+    """Keep the upstream status when MCP returns a failed tool execution."""
+    def __init__(self, operation, result):
+        self.operation=operation['name']
+        self.method=operation['method']
+        self.status=result.get('structuredContent',{}).get('status')
+        self.result=result
+        super().__init__(f'{self.operation}: MCP error HTTP {self.status}; {result}')
+
+def decode_mcp_result(operation, result):
+    if result.get('isError'):
+        raise McpResponseError(operation,result)
+    return result['structuredContent']['resultado']
+
+def wait_for(description, action, predicate, timeout, retry_statuses=(404,502,503,504), interval=0.5):
+    deadline=time.monotonic()+timeout; last=None
+    while time.monotonic()<deadline:
+        try:
+            last=action()
+            if predicate(last): return last
+        except HTTPError as ex:
+            if ex.code not in retry_statuses: raise
+            last=str(ex)
+        except McpResponseError as ex:
+            if ex.method!='GET' or ex.status not in retry_statuses: raise
+            last=str(ex)
+        except (URLError, ConnectionError, TimeoutError) as ex:
+            last=str(ex)
+        time.sleep(interval)
+    raise AssertionError(f'{description}: no convergió; último resultado={last}')
+
+def donor_report_matches(report, *, category, complaints, delivered_units):
+    return (report.get('categoria')==category
+            and report.get('cantidadQuejas')==complaints
+            and sum(entity['unidades'] for entity in report.get('entidadesBeneficiadas',[]))==delivered_units)
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--gateway', default='http://127.0.0.1:8080')
@@ -41,22 +77,11 @@ def main():
             if match.groups(): arguments['id']=match.group(1)
             if data is not None: arguments['datos']=data
             result=client.call('tools/call',dict(name=op['name'],arguments=arguments))
-            if result.get('isError'): raise AssertionError((op['name'],result))
-            used.add(op['name']); return result['structuredContent']['resultado']
+            value=decode_mcp_result(op,result)
+            used.add(op['name']); return value
         raise AssertionError('Falta herramienta para '+component+' '+method+' '+path)
     def wait(description, action, predicate, retry_statuses=(404,502,503,504)):
-        deadline=time.monotonic()+args.timeout; last=None
-        while time.monotonic()<deadline:
-            try:
-                last=action()
-                if predicate(last): return last
-            except HTTPError as ex:
-                if ex.code not in retry_statuses: raise
-                last=str(ex)
-            except (URLError, ConnectionError, TimeoutError) as ex:
-                last=str(ex)
-            time.sleep(0.5)
-        raise AssertionError(f'{description}: no convergió; último resultado={last}')
+        return wait_for(description,action,predicate,args.timeout,retry_statuses)
     try:
         for component in PREFIX:
             wait('salud de '+component,
@@ -117,7 +142,11 @@ def main():
         assert all(a['origen']=='SOLICITUD_ENTIDAD' for a in batches)
         request('logistica','POST','/entregas/lote',dict(paqueteIds=[a['paqueteID'] for a in batches]))
         assert request('donadores','GET',f'/necesidades/{recurring}')['cantidadAsignada']==10
-        donor_report=wait('ficha integral',lambda:request('consultas','GET',f'/donadores/{donor}/ficha'),lambda d:d.get('categoria')=='COLABORADOR' and d.get('cantidadQuejas')==2 and sum(e['unidades'] for e in d.get('entidadesBeneficiadas',[]))==40)
+        # The two stock donations now count as successful deliveries: 19 + 2 = 21.
+        # Evaluate explicitly so the final expectation does not depend on cron timing.
+        request('incentivos','POST',f'/procesamiento/{donor}')
+        assert request('donadores','GET',f'/donadores/{donor}/estadisticas')['categoria']=='TRANSFORMADOR'
+        donor_report=wait('ficha integral',lambda:request('consultas','GET',f'/donadores/{donor}/ficha'),lambda d:donor_report_matches(d,category='TRANSFORMADOR',complaints=2,delivered_units=40))
         urgent=wait('necesidades urgentes',lambda:request('consultas','GET','/necesidades/urgentes'),lambda ds:any(d['necesidadID']==n and d['cantidadFaltante']==70 for d in ds))
         depot_report=wait('reporte depósito',lambda:request('consultas','GET','/depositos/reporte'),lambda ds:any(d['depositoID']==depot and d['cantidadEntidadesAtendidas']==1 for d in ds))
         quality=request('consultas','GET','/calidad')
