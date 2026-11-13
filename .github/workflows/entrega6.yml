@@ -8,6 +8,8 @@ on:
       - 'entrega6/test_probar_demo.py'
       - 'entrega6/probar_adversariales.py'
       - 'entrega6/test_adversariales.py'
+      - 'local/probar_integracion.py'
+      - 'local/probar_integracion_mcp.py'
       - 'ci/registrar_versiones.py'
       - 'contratos/tools.json'
   workflow_dispatch:

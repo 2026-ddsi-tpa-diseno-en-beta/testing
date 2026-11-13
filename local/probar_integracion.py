@@ -28,6 +28,26 @@ def request(component, method, path, data=None, expected_status=None):
             return json.loads(ex.read().decode())
         raise AssertionError(f'{component} {method} {path}: HTTP {ex.code} {ex.read().decode()}') from ex
 
+def wait_for_stock_assignments(need_id, expected_quantities, timeout=30, interval=0.1):
+    """Poll only the GET while the committed need's initial stock task finishes.
+
+    A complete but invalid result and request errors fail immediately; writes are
+    never repeated. Partial/empty reads remain pending only until the deadline.
+    """
+    deadline=time.monotonic()+timeout
+    while True:
+        assignments=[a for a in request('logistica','GET','/asignaciones') if a['necesidadID']==need_id]
+        if len(assignments)>=len(expected_quantities):
+            assert len(assignments)==len(expected_quantities),assignments
+            assert sorted(a['cantidadAsignada'] for a in assignments)==sorted(expected_quantities),assignments
+            assert all(a['origen']=='SOLICITUD_ENTIDAD' for a in assignments),assignments
+            return assignments
+        remaining=deadline-time.monotonic()
+        if remaining<=0:
+            raise AssertionError(f'Reservas de stock de {need_id}: timeout; último resultado={assignments}')
+        time.sleep(min(interval,remaining))
+
+
 def run_flows():
     donor = request('donadores','POST','/donadores',dict(nombre='Demo',apellido='Local',edad=25,email='demo@example.com',nroDocumento='123',domicilio='Medrano'))['id']
     entity = request('donadores','POST','/entidades',dict(razonSocial='Escuela local',domicilio='Medrano',telefono='123',correo='escuela@example.com'))['id']
@@ -75,8 +95,9 @@ def run_flows():
     print('PASS procesar donador, estadisticas y revocacion por queja',flush=True)
     recurring=need(products[1],10,'RECURRENTE')
     assert recurring['cantidadAsignada']==0
-    assignments=[a for a in request('logistica','GET','/asignaciones') if a['necesidadID']==recurring['id']]
+    assignments=wait_for_stock_assignments(recurring['id'],[4,6])
     assert len(assignments)==2,assignments
+    assert sorted(a['cantidadAsignada'] for a in assignments)==[4,6],assignments
     assert all(a['origen']=='SOLICITUD_ENTIDAD' for a in assignments)
     request('logistica','POST','/entregas/lote',dict(paqueteIds=[a['paqueteID'] for a in assignments]))
     assert request('donadores','GET',f"/necesidades/{recurring['id']}")['cantidadAsignada']==10

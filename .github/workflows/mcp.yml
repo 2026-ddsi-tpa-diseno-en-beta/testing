@@ -77,6 +77,8 @@ jobs:
         run: |
           python testing/ci/registrar_versiones.py testing/local/versiones-ci.json testing donaciones Donadores-Y-Entidades Componente_Logistica Incentivos mcp-server
           cmp testing/contratos/tools.json mcp-server/src/main/resources/tools.json
+      - name: Probar la espera de reservas asíncronas
+        run: python -m unittest discover -s testing/local -p test_probar_integracion.py -v
       - name: Compilar servicios y MCP
         run: |
           mvn -B -f donaciones/pom.xml package
