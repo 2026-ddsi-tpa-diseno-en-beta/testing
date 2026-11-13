@@ -5,8 +5,29 @@ on:
       - '.github/workflows/entrega6.yml'
       - 'entrega6/compose.yaml'
       - 'entrega6/probar_demo.py'
+      - 'entrega6/test_probar_demo.py'
+      - 'entrega6/probar_adversariales.py'
+      - 'entrega6/test_adversariales.py'
+      - 'ci/registrar_versiones.py'
       - 'contratos/tools.json'
   workflow_dispatch:
+    inputs:
+      logistica_ref:
+        description: 'Ref publicada de Logística; vacío usa la revisión validada'
+        required: false
+        default: '573182f361d763d53b4c2de59ce09120cdd26ac5'
+      donadores_ref:
+        description: 'Ref publicada de Donadores y Entidades; vacío usa la revisión validada'
+        required: false
+        default: '6e2c4870279beceb67988873054757dc07c8a3d3'
+      consultas_ref:
+        description: 'Ref publicada de Consultas; vacío usa la revisión validada'
+        required: false
+        default: '33860a7e72cfacfd0e40c4de660f136dc901c27c'
+      mcp_ref:
+        description: 'Ref publicada de MCP; vacío usa la revisión validada'
+        required: false
+        default: 'edcbf8f74e14f62a667f331dedc8ba318989863e'
 permissions:
   contents: read
 jobs:
@@ -24,12 +45,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Donadores-Y-Entidades
-          ref: 7e79e6118575b96a4e2e8b81f42a56e2b7ac5ad3
+          ref: ${{ inputs.donadores_ref || '6e2c4870279beceb67988873054757dc07c8a3d3' }}
           path: Donadores-Y-Entidades
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Componente_Logistica
-          ref: 2cb1b50ec83810aee5beb4fce1c2406479e9c086
+          ref: ${{ inputs.logistica_ref || '573182f361d763d53b4c2de59ce09120cdd26ac5' }}
           path: Componente_Logistica
       - uses: actions/checkout@v4
         with:
@@ -39,17 +60,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/API_Gateway
-          ref: 10e35b1c2a7a1b5e5c56e42d39f1a573a7705f70
+          ref: 6b4d53600a458f3989d56250d4082c45db107b79
           path: API_Gateway
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/Servicio_de_Consultas
-          ref: 43c28169ca843b2e45b4d66678a6c80a1232bc83
+          ref: ${{ inputs.consultas_ref || '33860a7e72cfacfd0e40c4de660f136dc901c27c' }}
           path: Servicio_de_Consultas
       - uses: actions/checkout@v4
         with:
           repository: 2026-ddsi-tpa-diseno-en-beta/mcp-server
-          ref: a5e3075f1eaa8f90cf7d547b06aa812839581e39
+          ref: ${{ inputs.mcp_ref || 'edcbf8f74e14f62a667f331dedc8ba318989863e' }}
           path: mcp-server
       - uses: actions/setup-java@v4
         with: {distribution: temurin, java-version: '21', cache: maven, cache-dependency-path: '**/pom.xml'}
@@ -57,27 +78,47 @@ jobs:
         with: {python-version: '3.12'}
       - name: Registrar versiones y comprobar contrato
         run: |
-          for repo in donaciones Donadores-Y-Entidades Componente_Logistica Incentivos API_Gateway Servicio_de_Consultas mcp-server; do git -C "$repo" rev-parse HEAD; done
+          python testing/ci/registrar_versiones.py testing/entrega6/versiones.json testing donaciones Donadores-Y-Entidades Componente_Logistica Incentivos API_Gateway Servicio_de_Consultas mcp-server
           cmp mcp-server/src/main/resources/tools.json testing/contratos/tools.json
-          mvn -B -ntp -f mcp-server/pom.xml package
+          python -m unittest discover -s testing/entrega6 -p test_probar_demo.py -v
+          python -m unittest discover -s testing/entrega6 -p test_adversariales.py -v
+      - name: Probar y compilar componentes antes de Docker
+        run: |
+          for repo in donaciones Donadores-Y-Entidades Componente_Logistica Incentivos API_Gateway Servicio_de_Consultas mcp-server; do
+            mvn -B -ntp -f "$repo/pom.xml" package || exit "$?"
+          done
       - name: Levantar entorno real
         working-directory: testing/entrega6
-        run: docker compose up -d --build
+        run: docker compose -p dds-paquete2-ci up -d --build
       - name: Ensayar por HTTP y MCP
         run: |
           python testing/entrega6/probar_demo.py --timeout 180
+          cp testing/entrega6/evidencia.local/resultado.json testing/entrega6/evidencia.local/resultado-http.json
           python testing/entrega6/probar_demo.py --mcp --timeout 180
+          cp testing/entrega6/evidencia.local/resultado.json testing/entrega6/evidencia.local/resultado-mcp.json
+      - name: Probar concurrencia y callbacks con persistencia real
+        run: |
+          python testing/entrega6/probar_adversariales.py --project dds-paquete2-ci --phase active --output testing/entrega6/evidencia-adversarial --timeout 180
+          python testing/entrega6/probar_adversariales.py --project dds-paquete2-ci --phase controlled --output testing/entrega6/evidencia-adversarial --timeout 180
+      - name: Verificar recibos después de reiniciar APIs
+        run: |
+          docker compose -p dds-paquete2-ci -f testing/entrega6/compose.yaml restart logistica donadores
+          docker compose -p dds-paquete2-ci -f testing/entrega6/compose.yaml restart gateway
+          python testing/entrega6/probar_adversariales.py --project dds-paquete2-ci --phase verify-restart --output testing/entrega6/evidencia-adversarial --timeout 180
       - name: Guardar evidencia y logs
         if: always()
-        run: docker compose -f testing/entrega6/compose.yaml logs --no-color > testing/entrega6/evidencia-compose.log
+        run: docker compose -p dds-paquete2-ci -f testing/entrega6/compose.yaml logs --no-color > testing/entrega6/evidencia-compose.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: evidencia-entrega6
           path: |
             testing/entrega6/evidencia.local/
+            testing/entrega6/evidencia-adversarial/
             testing/entrega6/evidencia-compose.log
+            testing/entrega6/versiones.json
+            '**/target/surefire-reports/'
       - name: Detener entorno
         if: always()
         working-directory: testing/entrega6
-        run: docker compose down
+        run: docker compose -p dds-paquete2-ci down
